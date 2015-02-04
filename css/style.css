@@ -1,0 +1,51 @@
+
+
+
+
+.hide {
+	display: none;
+}
+
+h2 {
+	text-align: center;
+}
+
+input[type=text] {
+	height: 20px;	
+}
+.ui-state-focus {
+	background: #f6f6f6 url("images/ui-bg_glass_100_f6f6f6_1x400.png") 50% 50% repeat-x;
+	color: #1c94c4;
+}
+
+#person {
+	border:1px gray solid;
+}
+
+#container {
+	width: 520px;
+	margin: 0 auto;
+}
+
+#radio {
+	display: table;
+	margin: 0 auto;
+	margin-bottom: 6px;
+}
+
+#person_data{
+	margin: 0 auto;
+}
+#person_data, #person_data input {
+	width: 200px;
+}
+
+#person_data input {
+	display: inline-block;
+	margin: 0 0 6px 0;	
+}
+
+#additionally input{
+	display: block;
+	margin: 0 auto;
+}
