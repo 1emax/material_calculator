@@ -13,17 +13,14 @@ h2 {
 input[type=text] {
 	height: 20px;	
 }
-.ui-state-focus {
-	background: #f6f6f6 url("images/ui-bg_glass_100_f6f6f6_1x400.png") 50% 50% repeat-x;
-	color: #1c94c4;
-}
+
 
 #person {
 	border:1px gray solid;
 }
 
 #container {
-	width: 520px;
+	width: 720px;
 	margin: 0 auto;
 }
 
@@ -44,8 +41,38 @@ input[type=text] {
 	display: inline-block;
 	margin: 0 0 6px 0;	
 }
-
-#additionally input{
+#additionally>div {
 	display: block;
 	margin: 0 auto;
+}
+#additionally input{
+	display: inline-block;
+	font-size: 14px;
+}
+
+select.overflow {
+	height: 200px;
+}
+
+fieldset>div {
+	text-align: center;
+	display: inline-block;
+	margin: 30px 0 0 0;
+}
+
+label {
+	display: block;
+}
+select {
+	width: 200px;
+}
+
+/* UI corrections*/
+.ui-selectmenu-button span.ui-selectmenu-text{
+	padding: 0;
+}
+
+.ui-state-focus {
+	background: #f6f6f6 url("images/ui-bg_glass_100_f6f6f6_1x400.png") 50% 50% repeat-x;
+	color: #1c94c4;
 }
