@@ -24,12 +24,12 @@
 			</div>
 			<div id="person_data">
 			<!-- validation -->
-				<input type="text" class="hide" placeholder="Название компании">
-				<input type="text" placeholder="Фамилия">
-				<input type="text" placeholder="Имя">
-				<input type="text" placeholder="Отчество">
-				<input type="text" id="phone_number" placeholder="Телефон">
-				<input type="text" placeholder="E-mail">
+				<input type="text" name="company_name" id="company_name" class="hide" placeholder="Название компании">
+				<input type="text" name="last_name" id="last_name" placeholder="Фамилия">
+				<input type="text" name="user_name" id="user_name" placeholder="Имя">
+				<input type="text" name="patronymic" id="patronymic" placeholder="Отчество">
+				<input type="text" name="phone_number" id="phone_number" placeholder="Телефон">
+				<input type="text" name="email" id="email" placeholder="E-mail">
 			</div>
 		</div>
 	</div>
@@ -73,25 +73,36 @@
 			<input type="submit" value="Добавить пенобетонные блоки">
 			<input type="submit" value="Добавить сухие смеси">
 
-			<form action="#">
-			<span class="close" title="close">X</span>
-			<!-- для кнопки блоков -->
-				<input type="text" placeholder="Размер">
-				<input type="text" placeholder="Плотность">
-				<input type="text" placeholder="Количество (в шт., м3, кол-во поддонов)">				
-						<!-- delete placeholders -->
-			</form>
+			<div class="form_cont">
+				<div class="c_help">
+					<span class="close" title="close">x</span>
+				</div>
+				<div class="f_help">
+					<form action="#">
+					<!-- для кнопки блоков -->
+						<input type="text" placeholder="Размер">
+						<input type="text" placeholder="Плотность">
+						<input type="text" placeholder="Количество (в шт., м3, кол-во поддонов)">				
+								<!-- delete placeholders -->
+					</form>
+				</div>
+			</div>
+			<div class="form_cont">
+				<div class="c_help">
+					<span class="close" title="Close">x</span>
+				</div>
+				<div class="f_help">
+					<form action="#">
+					<!-- для кнопки смесей -->
+						<input type="text" placeholder="Материал">
+						<input type="text" placeholder="Производитель">
+						<input type="text" placeholder="Фасовка (кг)">				
+						<input type="text" placeholder="Количество (шт.)">
+								<!-- delete placeholders -->
 
-			<form action="#">
-			<span class="close" title="Close">X</span>
-			<!-- для кнопки смесей -->
-				<input type="text" placeholder="Материал">
-				<input type="text" placeholder="Производитель">
-				<input type="text" placeholder="Фасовка (кг)">				
-				<input type="text" placeholder="Количество (шт.)">
-						<!-- delete placeholders -->
-
-			</form>
+					</form>
+				</div>
+			</div>
 		</div>
 	</div>
 

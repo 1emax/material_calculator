@@ -1,8 +1,4 @@
-
-
-
-
-.hide {
+#container .hide {
 	display: none;
 }
 
@@ -33,6 +29,7 @@ input[type=text] {
 #person_data{
 	margin: 0 auto;
 }
+
 #person_data, #person_data input {
 	width: 200px;
 }
@@ -41,10 +38,12 @@ input[type=text] {
 	display: inline-block;
 	margin: 0 0 6px 0;	
 }
+
 #additionally>div {
 	display: block;
 	margin: 0 auto;
 }
+
 #additionally input{
 	display: inline-block;
 	font-size: 14px;
@@ -63,13 +62,56 @@ fieldset>div {
 label {
 	display: block;
 }
+
 select {
 	width: 200px;
 }
 
+#input_data .c_help {
+	display: inline-block;
+	vertical-align: top;
+}
+
+#input_data .c_help span {
+	border-radius: 20px;
+	border: 1px black solid;
+	height: 10px;
+	display: block;
+	width: 10px;
+	padding: 0px 6px 14px 6px;
+	cursor: pointer;
+}
+
+#input_data .c_help span:hover {
+	background-color: gray;
+}
+
+div.form_cont {
+	margin: 5px 0 0 0;
+}
+
+#input_data .f_help {
+	margin: 5px 0 0 0;
+	display: inline-block;
+}
+
+#input_data form input {
+	margin: 5px 0 0 0;
+	display: block;
+}
+
+/*#input_data form:before {
+	content: "X";
+	left:-30px;
+}*/
+
 /* UI corrections*/
 .ui-selectmenu-button span.ui-selectmenu-text{
 	padding: 0;
+}
+
+input[type=submit] {
+	font-size: 14px;
 }
 
 .ui-state-focus {
