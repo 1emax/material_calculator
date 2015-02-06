@@ -103,6 +103,16 @@ $(function() {
 		}, 'json');
 	}});
 
+	// block input data
+	$('#add_block').on('click', function(e){
+		$('.added_block').eq(0).clone().insertAfter($('.added_block:last')).find('input[type=text]').each(function(i, el) {
+			$(el).val('');
+		});
+	});
+	$('#add_mix').on('click', function(e) {
+		$('.added_mix').eq(0).clone().insertAfter($('.added_mix:last'));
+	});
+
     
 
 });
