@@ -11,7 +11,7 @@
 	<script src="js/jquery-ui/jquery-ui.js"></script>
 	<script src="js/jquery.maskedinput.min.js"></script>
 	<script src="js/jquery-ui/datepicker-ru.js"></script>
-	<script src="http://api-maps.yandex.ru/2.0-stable/?load=package.standard&lang=ru-RU" type="text/javascript"> </script>
+	<!-- <script src="http://api-maps.yandex.ru/2.0-stable/?load=package.standard&lang=ru-RU" type="text/javascript"> </script> -->
 </head>
 <body>
 <div id="container">
@@ -42,8 +42,7 @@
 					<div><label for="category">Категория</label>
 					<select name="category" id="category">
 						<option class="not_sel">Выбрать</option>
-						<option>Блоки</option>
-						<option>Кирпич</option>
+						<?php $Calc->showBlock('category', 'option'); ?>						
 					</select></div>
 
 					<div><label for="material">Материал</label>
