@@ -1,25 +1,148 @@
-#container .hide {
+.container .hide {
 	display: none;
 }
 
-h2 {
-	text-align: center;
+.container {
+	margin-top: 25px;
+}
+
+div.row {
+	border: 2px gray solid;
+	margin: 20px 0;
+}
+
+#person_data input {
+	margin: 6px 15px;	
+}
+
+.b-title {
+	display: inline-block; 
+	top: -38px;
+	background-color: white;
+	position: relative;
+	padding: 0 10px;
+	margin-bottom: 0px;
+}
+
+#products form {
+	padding-bottom: 100px;
+}
+
+div.form_cont {
+	/*margin: 5px 0 0 0;*/
+	margin-top: 15px;
+	border: 1px gray solid;
+	ma
+}
+
+div.form_cont .close {
+	float: left;
+}
+
+.close {	
+	webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+}
+
+div.form_cont .f_help  {
+	padding-left: 0px;
+}
+
+.padding0 {
+	padding: 5px 0;
+}
+
+#input_data button.close {
+	border-radius: 20px;
+	border: 1px black solid;
+	height: 7px;
+	display: block;
+	width: 10px;
+	padding: 0px 6px 13px 3px;
+	margin: -11px 0px -15px -26px;
+	cursor: pointer;
+	background-color: white;
+	opacity: 1;
+}
+
+#input_data button.close:hover {
+	background-color: gray;
+	opacity: .7;
+}
+
+.added_block, .added_mix {
+	padding:15px 0;
+	border-right: 1px gray solid;
 }
 
 input[type=text] {
 	height: 20px;	
 }
 
+.narrow input[type=text] {
+	width: 30px;
+}
+
+.form_cont .number {
+	padding-right: 0px;
+}
+
+.form_cont .number div {
+	padding: 0px 5px;
+}
+
+.form_cont .number div {
+	font-size: 12px;
+}
+
+.mater_count {
+	float: right;
+	padding-top: 5px;
+}
+
+.mater_count p{
+	display: inline-block;
+	padding: 0;
+}
+
+#ya_map {
+	border:1px gray solid;
+	height: 400px;
+	margin-bottom: 20px;
+}
+
+#delivery_calc>* {
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+.input-big input {
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+/*select {
+	width: 250px;
+}
+*/
+/*
+h2 {
+	text-align: center;
+}
+
+
+
 
 #person {
 	border:1px gray solid;
-}
+}*/
 
-#container {
+/*.container {
 	width: 720px;
 	margin: 0 auto;
-}
-
+}*/
+/*
 #radio {
 	display: table;
 	margin: 0 auto;
@@ -30,9 +153,7 @@ input[type=text] {
 	margin: 0 auto;
 }
 
-#person_data, #person_data input {
-	width: 200px;
-}
+
 
 #person_data input {
 	display: inline-block;
@@ -63,36 +184,16 @@ label {
 	display: block;
 }
 
-select {
-	width: 200px;
-}
 
-#input_data .c_help {
-	display: inline-block;
-	vertical-align: top;
-}
 
-#input_data .c_help span {
-	border-radius: 20px;
-	border: 1px black solid;
-	height: 10px;
-	display: block;
-	width: 10px;
-	padding: 0px 6px 14px 6px;
-	margin: -2px -5px 0 5px;
-	cursor: pointer;
-}
+
 .added_mix, .added_block {
 	display: inline-block;
 }
 
-#input_data .c_help span:hover {
-	background-color: gray;
-}
 
-div.form_cont {
-	margin: 5px 0 0 0;
-}
+
+
 
 #input_data .f_help {
 	margin: 5px 0 0 0;
@@ -103,14 +204,14 @@ div.form_cont {
 	margin: 5px 0 0 0;
 	display: block;
 }
-
+*/
 /*#input_data form:before {
 	content: "X";
 	left:-30px;
 }*/
 
 /* UI corrections*/
-.ui-selectmenu-button span.ui-selectmenu-text{
+/*.ui-selectmenu-button span.ui-selectmenu-text{
 	padding: 0;
 }
 
@@ -121,4 +222,4 @@ input[type=submit] {
 .ui-state-focus {
 	background: #f6f6f6 url("images/ui-bg_glass_100_f6f6f6_1x400.png") 50% 50% repeat-x;
 	color: #1c94c4;
-}
+}*/

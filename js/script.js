@@ -2,32 +2,15 @@
 var debugMessage = '';
 
 $(function() {
-	//radio button view
-	$( "#radio" ).buttonset();
-
-	//button view  	
-	$( "input[type=submit]" )
-      .button()
-      .click(function( event ) {
-        event.preventDefault();
-	});
-
-    $( "#category, #material, #manufacturer" )
-      .selectmenu()
-      .selectmenu( "menuWidget" )
-        .addClass( "overflow" );
-
-    $("#material, #manufacturer" )
-      .selectmenu("option", "disabled", true);
-
-    $( document ).tooltip();
-
+	var $addBlock = $('.form_cont.block').clone();
+	var $addMix = $('.form_cont.mix').clone();
 	$('input#phone_number').mask("+7 (999) 999-99-99");
 
-	$( "#date_of_prepayment, #delivery_date, #shipment_date" ).datepicker( $.datepicker.regional[ "ru" ] );
+	$('#person #radio label').on('click', function(e) {
+		e.preventDefault();
 
-	$('input#individual, input#legal').on('click', function(e) {
-		var isLegal = $('input#legal').is(':checked');
+		$(this).addClass('active').siblings().removeClass('active');
+		var isLegal = $('input#legal').parent().is('.active');
 
 		if(isLegal === true) {
 			$('#company_name').removeClass('hide');
@@ -36,10 +19,40 @@ $(function() {
 		}
 	});
 
+	$( "#category, #material, #manufacturer" )
+      .selectmenu()
+      .selectmenu( "menuWidget" )
+        .addClass( "overflow" );
+
+    $("#material, #manufacturer" )
+      .selectmenu("option", "disabled", true);
+
+    //button view  	
+	$( "#input_data input[type=submit]" )
+      .button()
+      .click(function( event ) {
+        event.preventDefault();
+	});
+
+	/*
+	//radio button view
+	$( "#radio" ).buttonset();
+
+	
+
+    
+
+    $( document ).tooltip();
+
+
+	$( "#date_of_prepayment, #delivery_date, #shipment_date" ).datepicker( $.datepicker.regional[ "ru" ] );
+
+	
+
 	$('.close').on('click', function(e) {
 		$(this).parents('.form_cont').remove();
 	});
-
+	*/
 	$('#category').selectmenu({change: function(e, ui) {
 		var $elem = $(ui.item.element);
 
@@ -105,14 +118,18 @@ $(function() {
 
 	// block input data
 	$('#add_block').on('click', function(e){
-		$('.added_block').eq(0).clone().insertAfter($('.added_block:last')).find('input[type=text]').each(function(i, el) {
-			$(el).val('');
-		});
+		$addBlock.clone().insertAfter($('.form_cont.block:last')).find('select').selectmenu()
+      .selectmenu( "menuWidget" )
+        .addClass( "overflow" );
 	});
+
 	$('#add_mix').on('click', function(e) {
-		$('.added_mix').eq(0).clone().insertAfter($('.added_mix:last'));
+		$addMix.clone().insertAfter($('.form_cont.mix:last')).find('select').selectmenu()
+      .selectmenu( "menuWidget" )
+        .addClass( "overflow" );
 	});
 
     
 
 });
+

@@ -4,3 +4,7 @@ js/jquery-ui/
 css/jquery-ui.css
 css/images/
 js/jquery.maskedinput.min.js
+fonts/
+css/bootstrap*
+js/bootstrap*
+js/npm.js
