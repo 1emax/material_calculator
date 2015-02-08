@@ -6,12 +6,13 @@
 	margin-top: 25px;
 }
 
-div.row {
+.container>div.row {
 	border: 2px gray solid;
 	margin: 20px 0;
+	padding-bottom: 25px;	
 }
 
-#person_data input {
+#person_data input, #additionally input {
 	margin: 6px 15px;	
 }
 
@@ -25,7 +26,7 @@ div.row {
 }
 
 #products form {
-	padding-bottom: 100px;
+	padding-bottom: 70px;
 }
 
 div.form_cont {
@@ -122,6 +123,61 @@ input[type=text] {
 	padding-bottom: 15px;
 }
 
+div.unvisible {
+	display: none;
+}
+
+.table-hover>tbody td.rowspaned:hover {
+	background-color: white;
+}
+
+.table-hover>tbody td.rowspaned {
+	background-color: white;
+}
+
+.centered * {
+	text-align: center;
+	vertical-align: middle;
+}
+
+.toleft {
+	text-align: left;
+}
+
+.toright {
+	text-align: right;
+}
+
+.table td {
+	min-height: 34px;
+}
+
+.table.notop>tbody>tr>td {
+	border-top: initial;
+}
+
+/*#transport .handler .table .rowspaned {
+	border:1px white solid;
+}
+
+#transport .handler .table td.rowspaned.comn_,#transport .handler .table th.rowspaned.comn_ {
+	border:3px #ddd solid;
+}*/
+
+#transport div.comn_ {
+	min-height: 34px;
+	border:1px solid #ddd;	
+}
+
+#comment {
+	min-height: 150px;
+	margin: 20px 15px 30px 30px;
+}
+
+.container .in_all, .container .not_deliv_cost {
+	border: 1px #ddd solid;
+	min-height: 34px;
+}
 /*select {
 	width: 250px;
 }

@@ -1,9 +1,11 @@
 "use strict";
 var debugMessage = '';
+var enableDebug = true;
+
+var $addBlock = {};
+var $addMix = {}; 
 
 $(function() {
-	var $addBlock = $('.form_cont.block').clone();
-	var $addMix = $('.form_cont.mix').clone();
 	$('input#phone_number').mask("+7 (999) 999-99-99");
 
 	$('#person #radio label').on('click', function(e) {
@@ -19,41 +21,18 @@ $(function() {
 		}
 	});
 
-	$( "#category, #material, #manufacturer" )
+	$( "#products #category, #products #material, #products #manufacturer" )
       .selectmenu()
       .selectmenu( "menuWidget" )
         .addClass( "overflow" );
 
-    $("#material, #manufacturer" )
+    $("#products #material,#products  #manufacturer" )
       .selectmenu("option", "disabled", true);
 
-    //button view  	
-	$( "#input_data input[type=submit]" )
-      .button()
-      .click(function( event ) {
-        event.preventDefault();
-	});
-
-	/*
-	//radio button view
-	$( "#radio" ).buttonset();
-
-	
-
     
-
-    $( document ).tooltip();
-
-
-	$( "#date_of_prepayment, #delivery_date, #shipment_date" ).datepicker( $.datepicker.regional[ "ru" ] );
-
 	
 
-	$('.close').on('click', function(e) {
-		$(this).parents('.form_cont').remove();
-	});
-	*/
-	$('#category').selectmenu({change: function(e, ui) {
+	$('#products #category').selectmenu({change: function(e, ui) {
 		var $elem = $(ui.item.element);
 
 		if(!$elem.prop('id')) return;
@@ -61,12 +40,12 @@ $(function() {
 		var parentId = $elem.parent().attr('id');
 
 		var id = $elem.attr('id').split(parentId + '-').join('');
-		console.log(id,parentId);
+		// console.log(id,parentId);
 
 		$.post('ajax.php?getItems', {'type':parentId, 'id':id}, function(data) {
-			var $materialEl = $('#material');
+			var $materialEl = $('#products #material');
 			$materialEl.selectmenu('disable').find(':not(.not_sel)').remove();
-			$('#manufacturer').selectmenu('disable').find(':not(.not_sel)').remove();
+			$('#products #manufacturer').selectmenu('disable').find(':not(.not_sel)').remove();
 
 			if(data!==null && data['items'] !== null &&  data['items'].length != 0) {
 
@@ -85,7 +64,7 @@ $(function() {
 		}, 'json');
 	}});
 
-	$('#material').selectmenu({change: function(e, ui) {
+	$('#products #material').selectmenu({change: function(e, ui) {
 		var $elem = $(ui.item.element);
 
 		if(!$elem.prop('id')) return;
@@ -93,10 +72,12 @@ $(function() {
 		var parentId = $elem.parent().attr('id');
 		var id = $elem.attr('id').split(parentId + '-').join('');
 		// var id = $('#category option:selected').attr('id').split(parentId + '-').join('');
-		console.log(id,parentId);
+		// console.log(id,parentId);
 
 		$.post('ajax.php?getItems', {'type':parentId, 'id':id}, function(data) {
-			var $manufacturerEl = $('#manufacturer');
+			showUnvisible();
+
+			var $manufacturerEl = $('#products #manufacturer');
 			$manufacturerEl.selectmenu('disable').find(':not(.not_sel)').remove();
 
 			if(data!==null && data['items'] !== null &&  data['items'].length != 0) {
@@ -129,7 +110,34 @@ $(function() {
         .addClass( "overflow" );
 	});
 
+	if(enableDebug) showUnvisible();
+
     
 
 });
+
+
+function showUnvisible() {
+	$( document ).tooltip();
+
+	$( "#date_of_prepayment, #delivery_date, #shipment_date" ).datepicker( $.datepicker.regional[ "ru" ] );
+
+	$('.close').on('click', function(e) {
+		$(this).parents('.form_cont').remove();
+	});
+
+	$('.unvisible').removeClass('unvisible');
+
+	//button view  	
+	$( "#input_data input[type=submit], #additionally input[type=submit]" )
+      .button()
+      .click(function( event ) {
+        event.preventDefault();
+	});	
+
+
+    $addBlock = $('.form_cont.block').clone();
+	$addMix = $('.form_cont.mix').clone();
+
+}
 
