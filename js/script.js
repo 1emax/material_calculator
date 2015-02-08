@@ -4,6 +4,7 @@ var enableDebug = true;
 
 var $addBlock = {};
 var $addMix = {}; 
+var myMap;
 
 $(function() {
 	$('input#phone_number').mask("+7 (999) 999-99-99");
@@ -110,11 +111,25 @@ $(function() {
         .addClass( "overflow" );
 	});
 
-	if(enableDebug) showUnvisible();
-
-    
+	if(enableDebug) showUnvisible();  
 
 });
+
+function initMap() {
+	ymaps.ready(function () {
+	    myMap = new ymaps.Map("ya_map", {
+	        center: [55.76, 37.64],
+	        zoom: 10,
+	        // type: "yandex#satellite",
+	        controls: []
+	    });
+	});  
+	// https://tech.yandex.ru/maps/doc/jsapi/2.1/update/concepts/update-docpage/
+	// https://tech.yandex.ru/maps/doc/constructor/concepts/About-docpage/
+	// http://meganavigator.com/blogposts/podkluchenie-yandeks-kart-k-saity---bystryi-start
+
+	// may be https://tech.yandex.ru/maps/keys/get/
+}
 
 
 function showUnvisible() {
@@ -138,6 +153,8 @@ function showUnvisible() {
 
     $addBlock = $('.form_cont.block').clone();
 	$addMix = $('.form_cont.mix').clone();
+
+	initMap();
 
 }
 

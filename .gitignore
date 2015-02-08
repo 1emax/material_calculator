@@ -8,3 +8,5 @@ fonts/
 css/bootstrap*
 js/bootstrap*
 js/npm.js
+calc.sql
+product_features.sql
