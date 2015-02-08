@@ -1,16 +1,16 @@
 <?php
 
 class DB {
-	protected $host = 'localhost';
-	protected $name = 'calc';
-	protected $user = 'root';
-	protected $password = '';
+	protected $host = 'mywat.mysql.ukraine.com.ua';
+	protected $name = 'mywat_test';
+	protected $user = 'mywat_test';
+	protected $password = 'hmarmpzr';
 	public $query = '';
 
 	protected $PDO;
 
 	public function __construct() {
-		$dsn = 'mysql:dbname=' . $this->name . ';host='.$this->host;
+		$dsn = 'mysql:dbname=' . $this->name . ';host='.$this->host. ';charset=utf8';
 		$this->PDO = new PDO($dsn, $this->user, $this->password);
 	}
 
