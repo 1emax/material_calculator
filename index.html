@@ -36,7 +36,7 @@
 		<div><h2 class="b-title">Личные данные</h2></div>
 		<div class="input-big">
 			<div class="col-lg-10 col-md-10 col-sm-10">
-				<div id="radio" class="col-lg-6 col-md-6 col-sm-7 btn-group" data-toggle="buttons">
+				<div id="radio" class="col-lg-5 col-md-6 col-sm-7 btn-group" data-toggle="buttons">
 				    <label class="btn btn-primary active"><input type="radio" id="individual" name="individual" checked autocomplete="off">Физическое лицо</label>
 				    <label class="btn btn-primary"><input type="radio" id="legal" name="legal" autocomplete="off">Юридическое лицо</label>
 				</div>
@@ -48,10 +48,10 @@
 			<div id="person_data" class="col-lg-8 col-md-8 col-sm-8">
 			<!-- validation -->
 				<input type="text" name="last_name" id="last_name" class="col-lg-5 col-md-5 col-sm-5" placeholder="Фамилия">
-				<input type="text" name="user_name" id="user_name" class="col-lg-5 col-md-5 col-sm-5" placeholder="Имя">
-				<input type="text" name="patronymic" id="patronymic" class="col-lg-5 col-md-5 col-sm-5" placeholder="Отчество">
 				<input type="text" name="phone_number" id="phone_number" class="col-lg-5 col-md-5 col-sm-5" placeholder="Телефон">
+				<input type="text" name="user_name" id="user_name" class="col-lg-5 col-md-5 col-sm-5" placeholder="Имя">
 				<input type="text" name="email" id="email" class="col-lg-5 col-md-5 col-sm-5" placeholder="E-mail">
+				<input type="text" name="patronymic" id="patronymic" class="col-lg-5 col-md-5 col-sm-5" placeholder="Отчество">
 				<input type="text" name="company_name" id="company_name" class="hide col-lg-5 col-md-5 col-sm-5" placeholder="Название компании">
 
 			</div>
@@ -97,79 +97,123 @@
 		<!-- value of button changed by prev block -->
 			<input type="submit" value="Добавить пенобетонные блоки" id="add_block">
 			<input type="submit" value="Добавить сухие смеси" id="add_mix">
-
-			<div class="form_cont block col-lg-12 col-md-12 col-sm-12">
-				<button type="button" class="close" aria-label="Close" title="close"><span aria-hidden="true">&times;</span></button>
-				<div class="added_block col-lg-6 col-md-6 col-sm-6">
-					
-					<div class="f_help col-lg-12 col-md-12 col-sm-12">
-						<form action="#">
-						<!-- для кнопки блоков -->
-						<div class="col-lg-12 col-md-12 col-sm-12">
-							<select name="material" id="material" class="col-lg-5 col-md-5 col-sm-5">
-								<option class="not_sel">Размер</option>
-								<option>Газосиликатные блоки</option>
-								<option>Пенобетонные блоки</option>
-								<option>Керазитобетонные блоки</option>
-								<option>Пескоцементные блоки</option>
-							</select>
-							<select name="material" id="material" class="col-lg-5 col-md-5 col-sm-5">
-								<option class="not_sel">Плотность</option>
-								<option>Газосиликатные блоки</option>
-								<option>Пенобетонные блоки</option>
-								<option>Керазитобетонные блоки</option>
-								<option>Пескоцементные блоки</option>
-							</select>
+			<div class="blocks">
+				<div class="form_cont block col-lg-12 col-md-12 col-sm-12">
+					<button type="button" class="close" aria-label="Close" title="close"><span aria-hidden="true">&times;</span></button>
+					<div class="added_block col-lg-5 col-md-5 col-sm-6">
+						
+						<div class="f_help col-lg-12 col-md-12 col-sm-12">
+							<form action="#">
+							<!-- для кнопки блоков -->
+							<div class="buttons col-lg-12 col-md-12 col-sm-12">
+								<select name="size[]" class="size col-lg-5 col-md-5 col-sm-5">
+									<option class="not_sel">Размер</option>
+									<option>Газосиликатные блоки</option>
+									<option>Пенобетонные блоки</option>
+									<option>Керазитобетонные блоки</option>
+									<option>Пескоцементные блоки</option>
+								</select>
+								<select name="density[]" class="density col-lg-5 col-md-5 col-sm-5">
+									<option class="not_sel">Плотность</option>
+									<option>Газосиликатные блоки</option>
+									<option>Пенобетонные блоки</option>
+									<option>Керазитобетонные блоки</option>
+									<option>Пескоцементные блоки</option>
+								</select>
+							</div>
+							<div class="col-lg-12 col-md-12 col-sm-12 number ">
+								<p>Количество</p>
+								<div class="col-lg-4 col-md-4 col-sm-4"><input class="m3 col-lg-8 col-md-8 col-sm-8" type="text"><span> м<sup>3</sup></span></div>				
+								<div class="col-lg-4 col-md-4 col-sm-4"><input class="n col-lg-8 col-md-8 col-sm-8" type="text"><span> шт.</span></div>				
+								<div class="col-lg-4 col-md-4 col-sm-4"><input class="pallet col-lg-5 col-md-5 col-sm-5" type="text"><span> поддоны</span></div>
+							</div>
+							</form>
 						</div>
-						<div class="col-lg-12 col-md-12 col-sm-12 number narrow">
-							<p>Количество</p>
-							<div class="col-lg-4 col-md-4 col-sm-4"><input type="text"><span> м<sup>3</sup></span></div>				
-							<div class="col-lg-4 col-md-4 col-sm-4"><input type="text"><span> шт.</span></div>				
-							<div class="col-lg-4 col-md-4 col-sm-4"><input type="text"><span> поддоны</span></div>
-						</div>
-						</form>
+					</div>
+					<div class="characteristic_block table-responsive col-lg-7 col-md-7 col-sm-6">
+						<table class="table table-striped table-bordered table-hover">
+							<tbody>
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
-			<div class="form_cont mix col-lg-12 col-md-12 col-sm-12">
-			<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<div class="added_mix col-lg-6 col-md-6 col-sm-6">
+			<div class="mixes">
+				<div class="form_cont mix col-lg-12 col-md-12 col-sm-12">
+					<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<div class="added_mix col-lg-6 col-md-6 col-sm-6">
+						
+						<div class="f_help">
+							<form action="#">
+							<!-- для кнопки смесей -->
+							<div class="buttons col-lg-12 col-md-12 col-sm-12">
+									<select name="product[]" class="product col-lg-5 col-md-5 col-sm-5">
+										<option class="not_sel">Материал</option>
+										<option>Клей для ячеистых бетонов</option>
+									</select>
+									<select name="prod_manufacturer[]" class="prod_manufacturer col-lg-5 col-md-5 col-sm-5">
+										<option class="not_sel">Производитель</option>
+										<option>ПроффСтрой</option>
+									</select>							
+								</div>
+								<div class="col-lg-12 col-md-12 col-sm-12">
+									<select name="packing[]" class="packing col-lg-5 col-md-5 col-sm-5">
+										<option class="not_sel">Фасовка (кг)</option>
+										<option>25</option>
+									</select>
+									<div class="col-lg-6 col-md-6 col-sm-6 number mater_count narrow">
+										<p class="col-lg-4 col-md-4 col-sm-4">Кол-во</p>			
+										<div class="col-lg-4 col-md-5 col-sm-4"><input type="text"><span> шт.</span></div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
 				
-				<div class="f_help">
-					<form action="#">
-					<!-- для кнопки смесей -->
-					<div class="col-lg-12 col-md-12 col-sm-12">
-							<select name="material" id="material" class="col-lg-5 col-md-5 col-sm-5">
-								<option class="not_sel">Материал</option>
-								<option>Газосиликатные блоки</option>
-								<option>Пенобетонные блоки</option>
-								<option>Керазитобетонные блоки</option>
-								<option>Пескоцементные блоки</option>
-							</select>
-							<select name="material" id="material" class="col-lg-5 col-md-5 col-sm-5">
-								<option class="not_sel">Производитель</option>
-								<option>Газосиликатные блоки</option>
-								<option>Пенобетонные блоки</option>
-								<option>Керазитобетонные блоки</option>
-								<option>Пескоцементные блоки</option>
-							</select>							
-						</div>
-						<div class="col-lg-12 col-md-12 col-sm-12">
-							<select name="material" id="material" class="col-lg-5 col-md-5 col-sm-5">
-								<option class="not_sel">Фасовка (кг)</option>
-								<option>Газосиликатные блоки</option>
-								<option>Пенобетонные блоки</option>
-								<option>Керазитобетонные блоки</option>
-								<option>Пескоцементные блоки</option>
-							</select>
-							<div class="col-lg-6 col-md-6 col-sm-6 number mater_count narrow">
-								<p class="col-lg-4 col-md-4 col-sm-4">Кол-во</p>			
-								<div class="col-lg-4 col-md-5 col-sm-4"><input type="text"><span> шт.</span></div>
-							</div>
-						</div>
-					</form>
+					<div class="characteristic_mix table-responsive col-lg-6 col-md-6 col-sm-6">
+						<table class="table table-striped table-bordered table-hover">
+						<tbody>
+							<tr>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+								</tr>
+						</tbody>
+							
+						</table>
+					</div>
 				</div>
-			</div>
 			</div>
 		</div>
 	</div>
@@ -178,15 +222,15 @@
 		<div><h2 class="b-title">Оплата</h2></div>
 		<div>
 			<div class="col-lg-4 col-md-4 col-sm-4">
-				<select name="material" id="material">
+				<select name="payment_type" id="payment_type">
 					<option class="not_sel">Форма оплаты</option>
 					<option id="non_cash_prepayment" name="non_cash_prepayment">Предоплата наличными</option>
 					<option id="cash_prepayment" name="cash_prepayment">Предоплата безналичными</option>
 					<option id="pay_on_object" name="pay_on_object">Оплата наличными на объекте</option>
 				</select>
 			</div>
-			<div id="radio" class="col-lg-7 col-md-7 col-sm-7 narrow">
-				<span>Скидка на блоки </span><input type="text" name="block_discount" id="block_discount"><span> руб.</span>
+			<div id="radio" class="col-lg-7 col-md-7 col-sm-7">
+				<span>Скидка на блоки </span><input type="text" class="col-lg-7 col-md-7 col-sm-7" name="block_discount" id="block_discount"><span> руб.</span>
 			</div>
 
 		</div>
@@ -262,7 +306,7 @@
 		</div>
 	</div>
 
-	<div id="delivery" class="row unvisible col-lg-12 col-md-12 col-sm-12">
+	<div id="delivery" class="row unvisible forpay col-lg-12 col-md-12 col-sm-12">
 		<div><h2 class="b-title">Доставка</h2></div>
 		<div>
 			<div id="delivery_calc" class="input-big col-lg-6 col-md-6 col-sm-6">
@@ -282,8 +326,7 @@
 
 				<div class="col-lg-4 col-md-4 col-sm-4">
 					<select name="material" id="material">
-						<option class="not_sel">Способ доставки</option>
-						<option id="pickup" name="pickup">Самовывоз</option>
+						<option class="not_sel">Заезд в Москву</option>
 						<option id="inside_mcad" name="inside_mcad">Внутри МКАД</option>
 						<option id="inside_ttk" name="inside_ttk">Внутри ТТК</option>
 						<option id="inside_sad_kolco" name="inside_sad_kolco">Внутри Садового кольца</option>
@@ -295,7 +338,7 @@
 		</div>
 	</div>
 
-	<div id="transport" class="row unvisible col-lg-12 col-md-12 col-sm-12">
+	<div id="transport" class="row unvisible forpay col-lg-12 col-md-12 col-sm-12">
 		<div><h2 class="b-title">Транспорт</h2></div>
 		<p><strong>Транспортировка</strong></p>		
 		<!-- Добавить выделение цветом выбранной колонки, т.е. мкад и т.д. -->
@@ -454,7 +497,7 @@
 		
 		<textarea id="comment" class="col-lg-10 col-md-10 col-sm-10" placeholder="Комментарий к заказу"></textarea>
 
-		<div class="center-block col-lg-9 col-md-9 col-sm-9">
+		<div class="center-block col-lg-9 col-md-11 col-sm-9">
 			<input type="submit" value="Очистить форму заказа">
 			<input type="submit" value="Очистить форму заказа материала">
 			<input type="submit" value="Оформить заказ">

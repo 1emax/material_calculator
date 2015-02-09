@@ -44,7 +44,7 @@ class Calc {
 		$db = $this->db;		
 		$db->select('id,name');		
 		$db->table('product_material');
-		$db->where('manufacturer_id='.$id);
+		$db->where('category_id='.$id);
 		return $db->get();		
 	}
 
@@ -54,6 +54,16 @@ class Calc {
 		$db->table('manufacturer');
 		$db->join('product_material', array('id'=>'manufacturer_id'), 'man');
 		$db->where('product_material.id='.$id);
+		return $db->get();
+	}
+
+	public function MaterialsCharct($sIds) {
+		$db = $this->db;
+		$db->select('p.id as pid, p.manufacturer_id, product_features.*');		
+		$db->table('product_material');
+		$db->join('product_features', array('id'=>'product_id'), 'p');
+		$db->where('p.id in '."('$sIds')");
+
 		return $db->get();
 	}
 }

@@ -74,11 +74,11 @@ div.form_cont .f_help  {
 
 .added_block, .added_mix {
 	padding:15px 0;
-	border-right: 1px gray solid;
+	/*border-right: 1px gray solid;*/
 }
 
 input[type=text] {
-	height: 20px;	
+	height: 26px;	
 }
 
 .narrow input[type=text] {
@@ -177,6 +177,21 @@ div.unvisible {
 .container .in_all, .container .not_deliv_cost {
 	border: 1px #ddd solid;
 	min-height: 34px;
+}
+
+div.characteristic_block, div.characteristic_mix {
+	border-left: 1px gray solid;
+	padding-top: 15px;
+}
+
+@media (min-width: 1200px) {
+	#person .input-big .col-lg-4 {
+		left: -33px;
+	}
+}
+
+.number input.pallet {
+	padding: 0;
 }
 /*select {
 	width: 250px;

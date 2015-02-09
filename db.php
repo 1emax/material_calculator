@@ -36,9 +36,12 @@ class DB {
 		$asStr = $as == '' ? $as : ' as ' . $as; 
 		$tablePref = $as == '' ? $this->table : $as;
 
+		$arrTabl = explode(' ',trim($jTable));
+		$tableName = $arrTabl[0];
+
 		if (is_array($ON)) {
 			foreach($ON as $param1 => $param2) {
-				$onStr .= ' '.$tablePref.'.'.$param1.'='.$jTable.'.'.$param2;
+				$onStr .= ' '.$tablePref.'.'.$param1.'='.$tableName.'.'.$param2;
 			}
 		} else {
 			$onStr = $ON;
@@ -53,7 +56,7 @@ class DB {
 
 	public function get(){
 		$this->clear();
-		// echo $this->query;
+		// echo $this->query . "\n\n";
 		return $this->PDO->query($this->query)->fetchAll(PDO::FETCH_ASSOC);
 	}
 
