@@ -1,11 +1,14 @@
 "use strict";
 var debugMessage = '';
-var enableCalc = false;
+var enableCalc = true;
+var mapObjs = {};
+var custmRoutersHelper = {};
 
 var $addBlock = {};
 var $addMix = {};
 var inputDataItems = {"blocks":{"length":0,"items":{}},"mixes":{"length":0,"items":{}}};
-var trArr = {"number_per_pallet":"Кол-во штук в 1 поддоне",	"number_per_cubic_meter":"Кол-во штук в 1 м<sup>3</sup>",	"weight":"Вес блока",	"weight_pallet_and_block":"Вес поддона с блоками",	"strength_class":"Класс прочности", "breaking_strength":"Предел прочности", "thermal_conductivity":"Теплопроводность, λ",	"frost_resistance":"Морозостойкость"};
+var trArr = {"number_per_pallet":"Кол-во штук на 1 поддоне",	"number_per_cubic_meter":"Кол-во штук в 1 м<sup>3</sup>",	"weight":"Вес блока",	"weight_pallet_and_block":"Вес поддона с блоками",	"strength_class":"Класс прочности", "breaking_strength":"Предел прочности", "thermal_conductivity":"Теплопроводность",	"frost_resistance":"Морозостойкость"};
+var trArrHelper = {"number_per_pallet":"шт",	"number_per_cubic_meter":"шт",	"weight":"кг",	"weight_pallet_and_block":"кг",	"strength_class":"-", "breaking_strength":"кг/см<sup>2</sup>", "thermal_conductivity":"Вт/м*К",	"frost_resistance":"Циклов"};
 
 // usage sample
 // addInpData(inputDataItems, 'blocks', {});
@@ -176,25 +179,124 @@ $(function() {
 		console.log(e, ui)
 	}});
 
-
 	if(enableCalc) showUnvisible();  
+
+	// when selecting delivery
+	$('select#delivery_type').selectmenu({change: function(e, ui) {
+		var $elem = $(ui.item.element);
+
+		if($elem.attr('name') == 'unloading_delivery' || $elem.attr('name') == 'not_unloading_delivery') {
+			$('.forpay').removeClass('unvisible');
+		} else {
+			$('.forpay').addClass('unvisible');
+		}
+
+		console.log(e, ui)
+		 
+	}});
+
+
 
 });
 
 function initMap() {
+	if(typeof ymaps === 'undefined') return;
+	
 	ymaps.ready(function () {
 	    myMap = new ymaps.Map("ya_map", {
-	        center: [55.76, 37.64],
+	        center: [55.958437,37.870906],
 	        zoom: 10,
 	        // type: "yandex#satellite",
 	        controls: []
 	    });
+	    mapObjs['manufacturer'] = new ymaps.Placemark([55.958437,37.870906], {
+            balloonContent: '<strong>ПроффСтрой</strong>'
+        }, {
+            preset: 'islands#icon',
+            iconColor: '#0095b6'
+        });
+
+	    myMap.geoObjects
+        .add(mapObjs['manufacturer']);
+
+		mapAutocomplete();
 	});  
 	// https://tech.yandex.ru/maps/doc/jsapi/2.1/update/concepts/update-docpage/
 	// https://tech.yandex.ru/maps/doc/constructor/concepts/About-docpage/
 	// http://meganavigator.com/blogposts/podkluchenie-yandeks-kart-k-saity---bystryi-start
 
 	// may be https://tech.yandex.ru/maps/keys/get/
+}
+
+function mapAutocomplete() {
+	var suggestView = new ymaps.SuggestView('deliv_address');
+
+	suggestView.events.add('select',function(e) {
+		ymaps.geocode(e.get('item').value, {
+			results: 1 
+		}).then(function (res) {
+            // Выбираем первый результат геокодирования.
+            var firstGeoObject = res.geoObjects.get(0),
+			// Координаты геообъекта.
+            coords = firstGeoObject.geometry.getCoordinates(),
+            // Область видимости геообъекта.
+            bounds = firstGeoObject.properties.get('boundedBy');
+			// Добавляем первый найденный геообъект на карту.
+            myMap.geoObjects.add(firstGeoObject);
+            // Масштабируем карту на область видимости геообъекта.
+            myMap.setBounds(bounds, {
+                checkZoomRange: true // проверяем наличие тайлов на данном масштабе.
+            });
+            // debugger;
+
+    		if(typeof mapObjs['goal'] !== 'undefined') myMap.geoObjects.remove(mapObjs['goal']);
+
+            mapObjs['goal'] = firstGeoObject;
+            roadWay();
+            /**
+             * Все данные в виде javascript-объекта.
+             */
+            console.log('Все данные геообъекта: ', firstGeoObject.properties.getAll());
+            /**
+             * Метаданные запроса и ответа геокодера.
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/GeocoderResponseMetaData.xml
+             */
+            console.log('Метаданные ответа геокодера: ', res.metaData);
+            /**
+             * Метаданные геокодера, возвращаемые для найденного объекта.
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/GeocoderMetaData.xml
+             */
+            console.log('Метаданные геокодера: ', firstGeoObject.properties.get('metaDataProperty.GeocoderMetaData'));
+            /**
+             * Точность ответа (precision) возвращается только для домов.
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/precision.xml
+             */
+            console.log('precision', firstGeoObject.properties.get('metaDataProperty.GeocoderMetaData.precision'));
+            /**
+             * Тип найденного объекта (kind).
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/kind.xml
+             */
+            console.log('Тип геообъекта: %s', firstGeoObject.properties.get('metaDataProperty.GeocoderMetaData.kind'));
+            console.log('Название объекта: %s', firstGeoObject.properties.get('name'));
+            console.log('Описание объекта: %s', firstGeoObject.properties.get('description'));
+            console.log('Полное описание объекта: %s', firstGeoObject.properties.get('text'));
+
+            /**
+             * Если нужно добавить по найденным геокодером координатам метку со своими стилями и контентом балуна, создаем новую метку по координатам найденной и добавляем ее на карту вместо найденной.
+             */
+            /**
+             var myPlacemark = new ymaps.Placemark(coords, {
+             iconContent: 'моя метка',
+             balloonContent: 'Содержимое балуна <strong>моей метки</strong>'
+             }, {
+             preset: 'islands#violetStretchyIcon'
+             });
+
+             myMap.geoObjects.add(myPlacemark);
+             */
+        });
+
+	});
 }
 
 
@@ -208,7 +310,7 @@ function showUnvisible() {
 	});
 
 	$('.unvisible:not(.forpay)').removeClass('unvisible');
-	$('#payment_type').selectmenu()
+	$('#payment_type, #delivery_type, #moskow_way').selectmenu()
 	      .selectmenu( "menuWidget" )
 	        .addClass( "overflow" );
 
@@ -290,6 +392,7 @@ function createTableSize($parent, $arr) {
 	for(var i in $arr) {
 		var $el = $arr[i];
 		$parent.append('<tr><td>'+$el[localArr[0]]+'</td><td>'+$el[localArr[1]]+'</td></tr>');
+		break;
 	}
 }
 
@@ -311,7 +414,7 @@ function createTableDensity($parent, $arr) {
 			$item.append('<td>'+$jEl[i]+'</td>');
 		}
 
-		$parent.append($item);
+		$parent.append($item.append('<td>'+trArrHelper[i]+'</td>'));
 		
 	}
 }
@@ -321,8 +424,8 @@ function createTableFull($parent, $arr) {
 	
 	for(var i in trArr) {
 		var el = trArr[i]; // el - name, i - key
-		$parent.append('<tr name="'+i+'"><td>'+el+'</td><td>'+$arr[i]+'</td></tr>');
-		if(i == 'number_per_cubic_meter') $parent.append('<tr name="cubic_per_pallet"><td>Кол-во м<sup>3</sup> на 1 поддоне</td><td>'+($arr['number_per_pallet']/$arr['number_per_cubic_meter']).toFixed(2)+'</td></tr>');
+		$parent.append('<tr name="'+i+'"><td>'+el+'</td><td>'+$arr[i]+'</td><td>'+trArrHelper[i]+'</td></tr>');
+		if(i == 'number_per_cubic_meter') $parent.append('<tr name="cubic_per_pallet"><td>Кол-во м<sup>3</sup> на 1 поддоне</td><td>'+($arr['number_per_pallet']/$arr['number_per_cubic_meter']).toFixed(2)+'</td><td>м<sup>3</sup></td></tr>');
 	}
 }
 
@@ -421,4 +524,67 @@ function changeInps($parent, iam,perMeter,perPallet, val, $grandpa) {
 		break;
 	}
 	return;
+}
+
+function roadWay() {
+
+    // Добавим на карту схему проезда
+    // от улицы Крылатские холмы до станции метро "Кунцевская"
+    // через станцию "Молодежная" и затем до станции "Пионерская".
+    // Точки маршрута можно задавать 3 способами:
+    // как строка, как объект или как массив геокоординат.
+    ymaps.route([
+        mapObjs['manufacturer'].geometry.getCoordinates().toString(),mapObjs['goal'].geometry.getCoordinates().toString()
+    ]).then(function (route) {
+    	if(typeof custmRoutersHelper['route'] !== 'undefined') myMap.geoObjects.remove(custmRoutersHelper['route']);
+
+    	custmRoutersHelper['route'] = route;
+    	var routeLen = route.getLength();
+    	$('#route_length').text( (routeLen/100).toFixed(1) + ' км');
+
+        myMap.geoObjects.add(route);
+
+        // Зададим содержание иконок начальной и конечной точкам маршрута.
+        // С помощью метода getWayPoints() получаем массив точек маршрута.
+        // Массив транзитных точек маршрута можно получить с помощью метода getViaPoints.
+        var points = route.getWayPoints(),
+            lastPoint = points.getLength() - 1;
+        // Задаем стиль метки - иконки будут красного цвета, и
+        // их изображения будут растягиваться под контент.
+        points.options.set('preset', 'islands#redStretchyIcon');
+        // Задаем контент меток в начальной и конечной точках.
+        points.get(0).properties.set('iconContent', 'Точка отправления');
+        points.get(lastPoint).properties.set('iconContent', 'Точка прибытия');
+
+        // Проанализируем маршрут по сегментам.
+        // Сегмент - участок маршрута, который нужно проехать до следующего
+        // изменения направления движения.
+        // Для того, чтобы получить сегменты маршрута, сначала необходимо получить
+        // отдельно каждый путь маршрута.
+        // Весь маршрут делится на два пути:
+        // 1) от улицы Крылатские холмы до станции "Кунцевская";
+        // 2) от станции "Кунцевская" до "Пионерская".
+
+        // var moveList = 'Трогаемся,</br>',
+        //     way,
+        //     segments;
+        // // Получаем массив путей.
+        // for (var i = 0; i < route.getPaths().getLength(); i++) {
+        //     way = route.getPaths().get(i);
+        //     segments = way.getSegments();
+        //     for (var j = 0; j < segments.length; j++) {
+        //         var street = segments[j].getStreet();
+        //         moveList += ('Едем ' + segments[j].getHumanAction() + (street ? ' на ' + street : '') + ', проезжаем ' + segments[j].getLength() + ' м.,');
+        //         moveList += '</br>'
+        //     }
+        // }
+        // moveList += 'Останавливаемся.';
+        // // Выводим маршрутный лист.
+        // $('#list').append(moveList);
+    }, function (error) {
+        alert('Возникла ошибка: ' + error.message);
+    }).then(function() {
+    	myMap.setBounds(myMap.geoObjects.getBounds());
+    });
+
 }
