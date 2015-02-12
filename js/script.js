@@ -196,12 +196,31 @@ $(function() {
 	}});
 
 
+	//admin page
+	$('#navbar a').click(function (e) {
+	  e.preventDefault();
+
+	  $.cookie('curr-tab', $(this).attr('href'), { expires: 365, path: '/' });
+
+	  $(this).tab('show');
+	})
+
+	$('.dropdown-toggle').dropdown();
+
+	if(typeof $.cookie !== 'undefined') {
+		if(typeof $.cookie('curr-tab') !== 'undefined') {
+			$('a[href='+$.cookie('curr-tab')+']').tab('show');
+		} else {
+			$.cookie('curr-tab', '#manufacturers', { expires: 365, path: '/' });
+		}
+	}
+
 
 });
 
 function initMap() {
 	if(typeof ymaps === 'undefined') return;
-	
+
 	ymaps.ready(function () {
 	    myMap = new ymaps.Map("ya_map", {
 	        center: [55.958437,37.870906],

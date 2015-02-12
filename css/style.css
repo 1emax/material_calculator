@@ -1,4 +1,4 @@
-.container .hide {
+ .hide {
 	display: none;
 }
 
@@ -192,6 +192,14 @@ div.characteristic_block, div.characteristic_mix {
 
 .number input.pallet {
 	padding: 0;
+}
+
+.current-tab {
+	/*background-color: black;*/
+}
+
+.container-fluid .nav-tabs {
+	border-bottom: none;
 }
 /*select {
 	width: 250px;
