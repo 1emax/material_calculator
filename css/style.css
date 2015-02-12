@@ -74,7 +74,7 @@ div.form_cont .f_help  {
 
 .added_block, .added_mix {
 	padding:15px 0;
-	/*border-right: 1px gray solid;*/
+	border-right: 1px gray solid;
 }
 
 input[type=text] {
@@ -91,10 +91,15 @@ input[type=text] {
 
 .form_cont .number div {
 	padding: 0px 5px;
+	font-size: 12px;
+
 }
 
-.form_cont .number div {
-	font-size: 12px;
+/*.form_cont .number div {
+}*/
+
+.form_cont .number div span {
+	vertical-align: middle;
 }
 
 .mater_count {
@@ -180,7 +185,7 @@ div.unvisible {
 }
 
 div.characteristic_block, div.characteristic_mix {
-	border-left: 1px gray solid;
+	/*border-left: 1px gray solid;*/
 	padding-top: 15px;
 }
 
@@ -200,6 +205,14 @@ div.characteristic_block, div.characteristic_mix {
 
 .container-fluid .nav-tabs {
 	border-bottom: none;
+}
+
+.ui-widget-content .ui-state-focus {
+	font-weight: 500;
+}
+
+#ya_map {
+	padding: 0;
 }
 /*select {
 	width: 250px;

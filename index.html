@@ -65,13 +65,13 @@
 				<fieldset>
 					<div class="col-lg-3 col-md-3 col-sm-3"><label for="category" class="col-lg-12 col-md-12 col-sm-12">Категория</label>
 					<select name="category" id="category" class="col-lg-12 col-md-12 col-sm-12">
-						<option class="not_sel">Выбрать</option>
+						<option class="not_sel">Категория</option>
 						<?php $Calc->showBlock('category', 'option'); ?>						
 					</select></div>
 					<div class="col-lg-1 col-md-1 col-sm-1"></div>
 					<div class="col-lg-3 col-md-3 col-sm-3"><label for="material" class="col-lg-12 col-md-12 col-sm-12">Материал</label>
 					<select name="material" id="material" class="col-lg-12 col-md-12 col-sm-12">
-						<option class="not_sel">Выбрать</option>
+						<option class="not_sel">Материал</option>
 						<option>Газосиликатные блоки</option>
 						<option>Пенобетонные блоки</option>
 						<option>Керазитобетонные блоки</option>
@@ -81,7 +81,7 @@
 
 					<div class="col-lg-3 col-md-3 col-sm-3"><label for="manufacturer" class="col-lg-12 col-md-12 col-sm-12">Производитель</label>
 					<select name="manufacturer" id="manufacturer" class="col-lg-12 col-md-12 col-sm-12">
-						<option class="not_sel">Выбрать</option>
+						<option class="not_sel">Производитель</option>
 						<option>ПроффСтрой</option>
 					</select></div>
 				</fieldset>
@@ -147,25 +147,28 @@
 							<form action="#">
 							<!-- для кнопки смесей -->
 							<div class="buttons col-lg-12 col-md-12 col-sm-12">
-									<select name="product[]" class="product col-lg-5 col-md-5 col-sm-5">
-										<option class="not_sel">Материал</option>
-										<option>Клей для ячеистых бетонов</option>
-									</select>
-									<select name="prod_manufacturer[]" class="prod_manufacturer col-lg-5 col-md-5 col-sm-5">
-										<option class="not_sel">Производитель</option>
-										<option>ПроффСтрой</option>
-									</select>							
-								</div>
-								<div class="col-lg-12 col-md-12 col-sm-12">
+								<select name="product[]" class="product col-lg-5 col-md-5 col-sm-5">
+									<option class="not_sel">Материал</option>
+									<option>Клей для ячеистых бетонов</option>
+								</select>
+								<select name="prod_manufacturer[]" class="prod_manufacturer col-lg-5 col-md-5 col-sm-5">
+									<option class="not_sel">Производитель</option>
+									<option>ПроффСтрой</option>
+								</select>							
+							</div>
+							<div class="col-lg-12 col-md-12 col-sm-12">
+								<!-- <div  class="packing col-lg-6 col-md-6 col-sm-6"> -->
 									<select name="packing[]" class="packing col-lg-5 col-md-5 col-sm-5">
 										<option class="not_sel">Фасовка (кг)</option>
 										<option>25</option>
 									</select>
-									<div class="col-lg-6 col-md-6 col-sm-6 number mater_count narrow">
-										<p class="col-lg-4 col-md-4 col-sm-4">Кол-во</p>			
-										<div class="col-lg-4 col-md-5 col-sm-4"><input type="text"><span> шт.</span></div>
-									</div>
+								<!-- </div> -->
+								<div class="col-lg-6 col-md-6 col-sm-6 number mater_count narrow">
+									<!-- <div class="col-lg-4 col-md-5 col-sm-4"> -->
+									<p>Количество</p> <input type="text"><span> шт.</span>
+									<!-- </div> -->
 								</div>
+							</div>
 							</form>
 						</div>
 					</div>
@@ -221,7 +224,7 @@
 	<div id="payment" class="row unvisible col-lg-12 col-md-12 col-sm-12">
 		<div><h2 class="b-title">Оплата</h2></div>
 		<div>
-			<div class="col-lg-4 col-md-4 col-sm-4">
+			<div class="col-lg-5 col-md-5 col-sm-5">
 				<select name="payment_type" id="payment_type">
 					<option class="not_sel">Форма оплаты</option>
 					<option id="non_cash_prepayment" name="non_cash_prepayment">Предоплата наличными</option>
@@ -231,7 +234,7 @@
 			</div>
 			<div id="radio" class="col-lg-7 col-md-7 col-sm-7">
 				<span class="col-lg-4 col-md-4 col-sm-4">Скидка на блоки </span>
-				<input type="text" class="col-lg-7 col-md-7 col-sm-7" name="block_discount" id="block_discount">
+				<input type="text" class="col-lg-2 col-md-2 col-sm-2" name="block_discount" id="block_discount">
 				<span class="col-lg-1 col-md-1 col-sm-1"> руб.</span>
 			</div>
 

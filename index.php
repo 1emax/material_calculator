@@ -45,6 +45,7 @@ class Calc {
 		$db->select('id,name');		
 		$db->table('product_material');
 		$db->where('category_id='.$id);
+		$db->query .= ' ORDER BY product_material.id';		
 		return $db->get();		
 	}
 

@@ -8,7 +8,7 @@ var $addBlock = {};
 var $addMix = {};
 var inputDataItems = {"blocks":{"length":0,"items":{}},"mixes":{"length":0,"items":{}}};
 var trArr = {"number_per_pallet":"Кол-во штук на 1 поддоне",	"number_per_cubic_meter":"Кол-во штук в 1 м<sup>3</sup>",	"weight":"Вес блока",	"weight_pallet_and_block":"Вес поддона с блоками",	"strength_class":"Класс прочности", "breaking_strength":"Предел прочности", "thermal_conductivity":"Теплопроводность",	"frost_resistance":"Морозостойкость"};
-var trArrHelper = {"number_per_pallet":"шт",	"number_per_cubic_meter":"шт",	"weight":"кг",	"weight_pallet_and_block":"кг",	"strength_class":"-", "breaking_strength":"кг/см<sup>2</sup>", "thermal_conductivity":"Вт/м*К",	"frost_resistance":"Циклов"};
+var trArrHelper = {"number_per_pallet":"шт",	"number_per_cubic_meter":"шт",	"weight":"кг",	"weight_pallet_and_block":"кг",	"strength_class":"-", "breaking_strength":"кг/см<sup>2</sup>", "thermal_conductivity":"Вт/м*C<sup>0</sup>",	"frost_resistance":"Циклов"};
 
 // usage sample
 // addInpData(inputDataItems, 'blocks', {});
@@ -320,7 +320,7 @@ function mapAutocomplete() {
 
 
 function showUnvisible() {
-	$( document ).tooltip();
+	// $( document ).tooltip();
 
 	$( "#date_of_prepayment, #delivery_date, #shipment_date" ).datepicker( $.datepicker.regional[ "ru" ] );
 
@@ -527,6 +527,9 @@ function onNumberInInpCh() {
 
 function changeInps($parent, iam,perMeter,perPallet, val, $grandpa) {
 	if($grandpa.find('select.size option:selected').hasClass('not_sel') || $grandpa.find('select.density option:selected').hasClass('not_sel')) return false;
+	if(isNaN(val)) val = 0;
+	if(isNaN(perPallet)) perPallet = 0;
+	if(isNaN(perMeter)) perMeter = 0;
 
 	switch(iam) {
 		case 'pallet':
