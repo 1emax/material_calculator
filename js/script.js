@@ -10,6 +10,7 @@ var inputDataItems = {"blocks":{"length":0,"items":{}},"mixes":{"length":0,"item
 var trArr = {"number_per_pallet":"Кол-во штук на 1 поддоне",	"number_per_cubic_meter":"Кол-во штук в 1 м<sup>3</sup>",	"weight":"Вес блока",	"weight_pallet_and_block":"Вес поддона с блоками",	"strength_class":"Класс прочности", "breaking_strength":"Предел прочности", "thermal_conductivity":"Теплопроводность",	"frost_resistance":"Морозостойкость"};
 var trArrHelper = {"number_per_pallet":"шт",	"number_per_cubic_meter":"шт",	"weight":"кг",	"weight_pallet_and_block":"кг",	"strength_class":"-", "breaking_strength":"кг/см<sup>2</sup>", "thermal_conductivity":"Вт/м*C<sup>0</sup>",	"frost_resistance":"Циклов"};
 var addTransportCols = ['',	'name','capacity','dimensions','pallets','rate','mcad','inside_mcad','inside_ttk','inside_sad_kolco'];
+var btnsObj = $('<td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>')
 
 // usage sample
 // addInpData(inputDataItems, 'blocks', {});
@@ -278,6 +279,17 @@ $(function() {
 			$(thisEl).removeClass('glyphicon-ok').addClass('glyphicon-pencil');			
 		});
 	});
+
+	$('#for-admin-payment, #for-admin-delivery').on('click', function(e) {
+		e.preventDefault();
+		var id = $(this).attr('id').split('for-').join('');
+		console.log(id);
+		if(typeof id === 'undefined') return;
+
+		var $row = addCustomRow($('.'+id + ' table'), 1, ['name'], btnsObj);
+		chColsToInput($row);
+	});
+
 
 });
 
@@ -769,4 +781,26 @@ function chInputToCols($row) {
 		var text = $(el).val();
 		$(el).parent().empty().text(text);
 	});
+}
+
+function addCustomRow($table, n, names, buttons) {
+	if(typeof buttons === 'undefined') buttons = false;
+
+	var $tbody = $table.find('tbody');
+	var $tr = $('<tr>');
+	$tr.append('<td>');
+	debugger;
+
+	for(var i = 1; i <= n; i++) {
+		var $col = $('<td>');
+		$col.addClass('edited');
+
+		if(names.length > 0) $col.attr('name', names[i-1]);
+		$tr.append($col);
+	}
+
+	if(buttons) $tr.append(buttons);
+	$tbody.append($tr);
+
+	return $tr;
 }

@@ -258,7 +258,7 @@ include(__DIR__ . '/index.php');
 		      		<span>Добавить </span>
 		      		<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
 		      	</button>
-		      </div>
+		    </div>
         </div>
       </div>
     </div>
@@ -273,56 +273,77 @@ include(__DIR__ . '/index.php');
     <div class="col-sm-9 col-md-10 main">
       <h1 class="page-header">Оплата и доставка</h1>
 
-      <h2 class="sub-header">Доставка</h2>
-      <div class="table-responsive">
+      <h2 class="sub-header">Оплата</h2>      
+
+      <div class="table-responsive admin-payment">
         <table class="table table-striped">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Вид оплаты</th>
+              <th class="col-sm-1 col-md-1">#</th>
+              <th class="col-sm-9 col-md-9">Вид оплаты</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>1</td>
               <td>Предоплата наличными деньгами</td>
+              <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
             </tr>
             <tr>
               <td>2</td>
               <td>Предоплата безналичными деньгами</td>
+              <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
             </tr>
             <tr>
               <td>3</td>
               <td>Оплата наличными деньгами на объекте</td>
+              <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
             </tr>            
           </tbody>
         </table>
+        <div class="col-sm-2 col-md-2 col-md-offset-9 col-md-offset-9">
+      	<button class="btn btn-success btn-xs" id="for-admin-payment" type="submit">
+      		<span>Добавить вид оплаты</span>
+      	</button>
+      </div>
       </div>
 
-      <h2 class="sub-header">Оплата</h2>
-      <div class="table-responsive">
+      <h2 class="sub-header">Доставка</h2>
+      
+
+      <div class="table-responsive admin-delivery">
         <table class="table table-striped">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Способ доставки</th>
+              <th class="col-sm-1 col-md-1">#</th>
+              <th class="col-sm-9 col-md9">Способ доставки</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>1</td>
               <td>Самовывоз</td>
+              <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
             </tr>
             <tr>
               <td>2</td>
               <td>Доставка с разгрузкой</td>
+              <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
             </tr>
             <tr>
               <td>3</td>
               <td>Доставка без разгрузки</td>
+              <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
             </tr>            
           </tbody>
         </table>
+        <div class="col-sm-2 col-md-2 col-md-offset-9 col-md-offset-9">
+	      	<button class="btn btn-success btn-xs" id="for-admin-delivery" type="submit">
+	      		<span>Добавить вид доставки</span>
+	      	</button>
+	    </div>
       </div>
 
     </div>
