@@ -23,6 +23,21 @@ if(isset($G['getItems'])) {
 	}
 
 	echo json_encode(array('items'=>$items));
+} elseif (isset($G['addTransport'])) {
+	$Transport = new Transport();
+
+	$Transport->add($P['data']);
+	echo json_encode(array('keys'=>array_keys($P['data'])));
+} elseif(isset($G['changeTransport'])) {
+	$Transport = new Transport();
+
+	$item = current($P['data']);
+	$id = intval($G['changeTransport']);
+	$Transport->change($id, $item);
+} elseif(isset($G['deleteTransport'])) {
+	$Transport = new Transport();
+	$id = intval($G['deleteTransport']);
+	$Transport->delete($id);
 }
 
 

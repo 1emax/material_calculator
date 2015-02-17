@@ -9,6 +9,7 @@ var $addMix = {};
 var inputDataItems = {"blocks":{"length":0,"items":{}},"mixes":{"length":0,"items":{}}};
 var trArr = {"number_per_pallet":"Кол-во штук на 1 поддоне",	"number_per_cubic_meter":"Кол-во штук в 1 м<sup>3</sup>",	"weight":"Вес блока",	"weight_pallet_and_block":"Вес поддона с блоками",	"strength_class":"Класс прочности", "breaking_strength":"Предел прочности", "thermal_conductivity":"Теплопроводность",	"frost_resistance":"Морозостойкость"};
 var trArrHelper = {"number_per_pallet":"шт",	"number_per_cubic_meter":"шт",	"weight":"кг",	"weight_pallet_and_block":"кг",	"strength_class":"-", "breaking_strength":"кг/см<sup>2</sup>", "thermal_conductivity":"Вт/м*C<sup>0</sup>",	"frost_resistance":"Циклов"};
+var addTransportCols = ['',	'name','capacity','dimensions','pallets','rate','mcad','inside_mcad','inside_ttk','inside_sad_kolco'];
 
 // usage sample
 // addInpData(inputDataItems, 'blocks', {});
@@ -215,6 +216,68 @@ $(function() {
 		}
 	}
 
+	$('#transport_number_add button').on('click', function(e) {
+		e.preventDefault();
+		var number_of = $(this).siblings('[name=number_of]');
+		if(number_of.val().match(/[0-9]+/) === null) {
+			number_of.addClass('incorrect');
+			return false;
+		} else {
+			number_of.removeClass('incorrect');
+		}
+
+	// $tbody.parent().removeClass('hide');
+		addTransportTable(parseInt(number_of.val()), 'add_transport');
+	});
+
+	$(document).on('click','#add_transport button[type=submit]', function(e) {
+		e.preventDefault();
+		var tableData = getTableData($("#add_transport table"));
+		if(tableData === false) return false;
+
+		$.post('ajax.php?addTransport', {'data':tableData}, function(data) {
+			$('#add_transport table tbody').empty();
+			location.href = location.href;
+		});
+
+	});
+
+	$('.transport_list .glyphicon-remove').on('click', function(e) {
+		e.preventDefault();
+
+		var $row = $(this).parents('tr');
+		var id = $row.attr('name').split('id').join('');
+		var thisEl = this;
+
+		if (confirm('Удалить данный транспорт?') === true) {
+			$.post('ajax.php?deleteTransport='+id, function(data) {
+				$(thisEl).parents('tr').remove();		
+		});
+		}
+	});
+
+	$(document).on('click','.transport_list .glyphicon-pencil', function(e) {
+		e.preventDefault();
+		var $row = $(this).parents('tr');
+		chColsToInput($row);
+		$(this).removeClass('glyphicon-pencil').addClass('glyphicon-ok');
+	});
+
+	$(document).on('click','.transport_list .glyphicon-ok', function(e) {
+		e.preventDefault();
+
+		var tableData = getTableData($('.transport_list table'));
+		if(tableData === false) return false;
+
+		var $row = $(this).parents('tr');
+		var id = $row.attr('name').split('id').join('');
+		chInputToCols($row);
+		var thisEl = this;
+
+		$.post('ajax.php?changeTransport='+id, {'data':tableData}, function(data) {
+			$(thisEl).removeClass('glyphicon-ok').addClass('glyphicon-pencil');			
+		});
+	});
 
 });
 
@@ -609,4 +672,101 @@ function roadWay() {
     	myMap.setBounds(myMap.geoObjects.getBounds());
     });
 
+}
+
+
+function addTransportTable(n, id) {
+	var $tbody = $('#'+id + ' tbody');
+
+	if( !(n>0) ) return;
+
+	var cols = 10;
+
+
+	for(var i = 1; i <= n; i++) {
+		var $row = $('<tr>');
+
+		$row.append('<td>'+i+'</td>')
+
+		for(var j = 1; j < cols; j++) {
+			var $inp = $('<input type="text" name="'+addTransportCols[j]+'[]" class="edited ">');
+
+			// if(j != 1 && j != 3) $inp.addClass('col-lg-2 col-md-2 col-sm-2');
+
+			$row.append($('<td>').append($inp));
+		}
+
+		$tbody.append($row);
+	}
+
+	$tbody.parents('div').removeClass('hide').find('td input.edited').eq(0).focus();
+	return $tbody.parent();
+}
+
+function getTableData($table) {
+	var values = {};
+	var rowVal = '';
+
+	$table.find('tbody tr').each(function(i, el){
+
+		rowVal = getRowData($(el));
+
+		if(rowVal !== false) {
+			values[i] = rowVal;
+		}
+	});
+
+	if($table.find('.incorrect').length == 0) {
+		return values;
+	} else {
+		return false;
+	}
+}
+
+function getRowData($row) {
+	var edited = false;
+	var values = {};
+	var name = '';
+	var val = '';
+	var hasEmpty = false;
+
+	$row.find('td input').removeClass('incorrect').each(function(i, el){
+		name = $(el).attr('name').split('[]').join('');
+		val = $(el).val();
+
+		if(val.length > 0 && edited === false) {
+			edited = true;
+		}
+
+		if(edited !== false && val.length == 0) {
+			$(el).addClass('incorrect');
+			hasEmpty = true;			
+		}
+
+		values[name] = val;
+	});
+
+	return (edited === true && hasEmpty === false)? values : false;
+}
+
+function chColsToInput($row) {
+	var $newCol = '';
+
+	$row.find('td[name]').each(function(i, el) {
+		// debugger;
+		$newCol = $('<input>');
+		$newCol.attr('name', $(el).attr('name')).addClass('edited');
+		$newCol.val($(el).text());
+
+		$(el).empty().append($newCol);
+	});
+}
+
+function chInputToCols($row) {
+	var $newCol = '';
+
+	$row.find('input[name]').each(function(i, el) {
+		var text = $(el).val();
+		$(el).parent().empty().text(text);
+	});
 }

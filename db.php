@@ -60,6 +60,13 @@ class DB {
 		return $this->PDO->query($this->query)->fetchAll(PDO::FETCH_ASSOC);
 	}
 
+	public function set() {
+		$this->clear();
+		// echo $this->query . "\n\n";
+
+		return $this->PDO->query($this->query);
+	}
+
 	public function clear() {
 		$this->table = '';
 	}

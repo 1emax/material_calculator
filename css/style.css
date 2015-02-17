@@ -214,6 +214,30 @@ div.characteristic_block, div.characteristic_mix {
 #ya_map {
 	padding: 0;
 }
+
+#add_transport {
+	margin-top: 50px;
+}
+
+td input.edited {
+	width: 100%;
+	display: block;
+	margin: 0 auto;
+}
+
+input.incorrect {
+	border-color: red;
+}
+
+.glyphicon-pencil, .transport_list span.glyphicon-ok {
+	color:green;
+	cursor: pointer;
+}
+
+.glyphicon-remove {
+	color:red;
+	cursor: pointer;
+}
 /*select {
 	width: 250px;
 }

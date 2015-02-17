@@ -180,8 +180,18 @@ include(__DIR__ . '/index.php');
      
     <div class="col-sm-9 col-md-10 main">
       <h1 class="page-header">Транспорт</h1>
+      <div id="transport_number_add" class="col-sm-5 col-md-6 col-md-offset-1">
+      	<span class="col-lg-6 col-md-6 col-sm-6">Добавить транспорт</span>
+      	<input type="text" name="number_of" class="col-lg-2 col-md-2 col-sm-2">
+      	<span class="col-lg-2 col-md-2 col-sm-2">шт.</span>
+      	<button class="btn btn-success btn-xs" type="submit">
+      		<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+      	</button>
+      </div>
 
-      <div class="">
+      <div class="transport_list">
+      <?php $Transport = new Transport(); 
+      	$transports = $Transport->getAll(); ?>
         <table class="table table-striped">
           <thead>
             <tr>
@@ -190,89 +200,66 @@ include(__DIR__ . '/index.php');
               <th>Грузоподъемность</th>
               <th>Габариты автомобиля</th>
               <th>Поддоны</th>
-              <th>Ставка</th>
-              <th>За км от МКАД</th>
-              <th>МКАД</th>
-              <th>ТТК</th>
-              <th>Садовое кольцо</th>
+              <th>Ставка (руб.)</th>
+              <th>За км от МКАД(руб.)</th>
+              <th>МКАД(руб.)</th>
+              <th>ТТК(руб.)</th>
+              <th>Садовое кольцо(руб.)</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1,001</td>
-              <td>Lorem</td>
-              <td>ipsum</td>
-              <td>dolor</td>
-              <td>dolor</td>
-              <td>dolor</td>
-              <td>dolor</td>
-              <td>dolor</td>
-              <td>dolor</td>
-              <td>sit</td>
-            </tr>
-            <tr>
-              <td>1,002</td>
-              <td>amet</td>
-              <td>consectetur</td>
-              <td>adipiscing</td>
-              <td>elit</td>
-              <td>elit</td>
-              <td>elit</td>
-              <td>elit</td>
-              <td>elit</td>
-              <td>elit</td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>Integer</td>
-              <td>nec</td>
-              <td>odio</td>
-              <td>Praesent</td>
-              <td>Praesent</td>
-              <td>Praesent</td>
-              <td>Praesent</td>
-              <td>Praesent</td>
-              <td>Praesent</td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>libero</td>
-              <td>Sed</td>
-              <td>cursus</td>
-              <td>ante</td>
-              <td>ante</td>
-              <td>ante</td>
-              <td>ante</td>
-              <td>ante</td>
-              <td>ante</td>
-            </tr>
-            <tr>
-              <td>1,004</td>
-              <td>dapibus</td>
-              <td>diam</td>
-              <td>Sed</td>
-              <td>nisi</td>
-              <td>nisi</td>
-              <td>nisi</td>
-              <td>nisi</td>
-              <td>nisi</td>
-              <td>nisi</td>
-            </tr>
-            <tr>
-              <td>1,005</td>
-              <td>Nulla</td>
-              <td>quis</td>
-              <td>sem</td>
-              <td>at</td>
-              <td>at</td>
-              <td>at</td>
-              <td>at</td>
-              <td>at</td>
-              <td>at</td>
-            </tr>
-            
+          <?php $transpCounter = 1; foreach($transports as $transpId => $oneTransport) { ?>
+	          <tr name="id<?php echo $oneTransport['id']; ?>">
+	              <td><?php echo $transpCounter++; ?></td>
+
+
+              <td name="name[]"><?php echo $oneTransport['name']; ?></td>
+              <td name="capacity[]"><?php echo $oneTransport['capacity']; ?></td>
+              <td name="dimensions[]"><?php echo $oneTransport['dimensions']; ?></td>
+              <td name="pallets[]"><?php echo $oneTransport['pallets']; ?></td>
+              <td name="rate[]"><?php echo $oneTransport['rate']; ?></td>
+              <td name="mcad[]"><?php echo $oneTransport['mcad']; ?></td>
+              <td name="inside_mcad[]"><?php echo $oneTransport['inside_mcad']; ?></td>
+              <td name="inside_ttk[]"><?php echo $oneTransport['inside_ttk']; ?></td>
+              <td name="inside_sad_kolco[]"><?php echo $oneTransport['inside_sad_kolco']; ?></td>
+              <td>
+              	<span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span>
+              	<span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span>
+              </td>
+	           </tr>
+			<?php } ?>            
           </tbody>
         </table>
+
+        <div id="add_transport" class="hide">
+	        <table class="table table-striped table-bordered ">
+	        <thead>
+	            <tr>
+	              <th>#</th>
+	              <th>Наименование</th>
+	              <th>Грузоподъемность</th>
+	              <th>Габариты автомобиля</th>
+	              <th>Поддоны</th>
+	              <th>Ставка (руб.)</th>
+	              <th>За км от МКАД(руб.)</th>
+	              <th>МКАД(руб.)</th>
+	              <th>ТТК(руб.)</th>
+	              <th>Садовое кольцо(руб.)</th>
+	            </tr>
+	          </thead>
+	          <tbody>
+	          </tbody>
+	        </table>
+
+
+	        <div class="col-sm-2 col-md-2 col-md-offset-10 col-md-offset-10">
+		      	<button class="btn btn-success btn-xs" type="submit">
+		      		<span>Добавить </span>
+		      		<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+		      	</button>
+		      </div>
+        </div>
       </div>
     </div>
   </div>
@@ -282,157 +269,62 @@ include(__DIR__ . '/index.php');
 
 <div role="tabpanel" class="tab-pane fade container-fluid" id="other">
   <div class="row">
-    <div class="col-sm-3 col-md-2 sidebar">
-      <ul class="nav nav-sidebar">
-        <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">Reports</a></li>
-        <li><a href="#">Analytics</a></li>
-        <li><a href="#">Export</a></li>
-      </ul>
-      <ul class="nav nav-sidebar">
-        <li><a href="">Nav item</a></li>
-        <li><a href="">Nav item again</a></li>
-        <li><a href="">One more nav</a></li>
-        <li><a href="">Another nav item</a></li>
-        <li><a href="">More navigation</a></li>
-      </ul>
-      <ul class="nav nav-sidebar">
-        <li><a href="">Nav item again</a></li>
-        <li><a href="">One more nav</a></li>
-        <li><a href="">Another nav item</a></li>
-      </ul>
-    </div>
-    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    
+    <div class="col-sm-9 col-md-10 main">
       <h1 class="page-header">Оплата и доставка</h1>
 
-      <h2 class="sub-header">Section title</h2>
+      <h2 class="sub-header">Доставка</h2>
       <div class="table-responsive">
         <table class="table table-striped">
           <thead>
             <tr>
               <th>#</th>
-              <th>Header</th>
-              <th>Header</th>
-              <th>Header</th>
-              <th>Header</th>
+              <th>Вид оплаты</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>1,001</td>
-              <td>Lorem</td>
-              <td>ipsum</td>
-              <td>dolor</td>
-              <td>sit</td>
+              <td>1</td>
+              <td>Предоплата наличными деньгами</td>
             </tr>
             <tr>
-              <td>1,002</td>
-              <td>amet</td>
-              <td>consectetur</td>
-              <td>adipiscing</td>
-              <td>elit</td>
+              <td>2</td>
+              <td>Предоплата безналичными деньгами</td>
             </tr>
             <tr>
-              <td>1,003</td>
-              <td>Integer</td>
-              <td>nec</td>
-              <td>odio</td>
-              <td>Praesent</td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>libero</td>
-              <td>Sed</td>
-              <td>cursus</td>
-              <td>ante</td>
-            </tr>
-            <tr>
-              <td>1,004</td>
-              <td>dapibus</td>
-              <td>diam</td>
-              <td>Sed</td>
-              <td>nisi</td>
-            </tr>
-            <tr>
-              <td>1,005</td>
-              <td>Nulla</td>
-              <td>quis</td>
-              <td>sem</td>
-              <td>at</td>
-            </tr>
-            <tr>
-              <td>1,006</td>
-              <td>nibh</td>
-              <td>elementum</td>
-              <td>imperdiet</td>
-              <td>Duis</td>
-            </tr>
-            <tr>
-              <td>1,007</td>
-              <td>sagittis</td>
-              <td>ipsum</td>
-              <td>Praesent</td>
-              <td>mauris</td>
-            </tr>
-            <tr>
-              <td>1,008</td>
-              <td>Fusce</td>
-              <td>nec</td>
-              <td>tellus</td>
-              <td>sed</td>
-            </tr>
-            <tr>
-              <td>1,009</td>
-              <td>augue</td>
-              <td>semper</td>
-              <td>porta</td>
-              <td>Mauris</td>
-            </tr>
-            <tr>
-              <td>1,010</td>
-              <td>massa</td>
-              <td>Vestibulum</td>
-              <td>lacinia</td>
-              <td>arcu</td>
-            </tr>
-            <tr>
-              <td>1,011</td>
-              <td>eget</td>
-              <td>nulla</td>
-              <td>Class</td>
-              <td>aptent</td>
-            </tr>
-            <tr>
-              <td>1,012</td>
-              <td>taciti</td>
-              <td>sociosqu</td>
-              <td>ad</td>
-              <td>litora</td>
-            </tr>
-            <tr>
-              <td>1,013</td>
-              <td>torquent</td>
-              <td>per</td>
-              <td>conubia</td>
-              <td>nostra</td>
-            </tr>
-            <tr>
-              <td>1,014</td>
-              <td>per</td>
-              <td>inceptos</td>
-              <td>himenaeos</td>
-              <td>Curabitur</td>
-            </tr>
-            <tr>
-              <td>1,015</td>
-              <td>sodales</td>
-              <td>ligula</td>
-              <td>in</td>
-              <td>libero</td>
-            </tr>
+              <td>3</td>
+              <td>Оплата наличными деньгами на объекте</td>
+            </tr>            
           </tbody>
         </table>
       </div>
+
+      <h2 class="sub-header">Оплата</h2>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Способ доставки</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Самовывоз</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Доставка с разгрузкой</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Доставка без разгрузки</td>
+            </tr>            
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
 </div>
