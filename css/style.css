@@ -229,7 +229,7 @@ input.incorrect {
 	border-color: red;
 }
 
-.glyphicon-pencil, .transport_list span.glyphicon-ok {
+.glyphicon-pencil, .transport_list span.glyphicon-ok, #admin-payment span.glyphicon-ok, #admin-delivery span.glyphicon-ok {
 	color:green;
 	cursor: pointer;
 }

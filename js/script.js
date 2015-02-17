@@ -10,7 +10,7 @@ var inputDataItems = {"blocks":{"length":0,"items":{}},"mixes":{"length":0,"item
 var trArr = {"number_per_pallet":"Кол-во штук на 1 поддоне",	"number_per_cubic_meter":"Кол-во штук в 1 м<sup>3</sup>",	"weight":"Вес блока",	"weight_pallet_and_block":"Вес поддона с блоками",	"strength_class":"Класс прочности", "breaking_strength":"Предел прочности", "thermal_conductivity":"Теплопроводность",	"frost_resistance":"Морозостойкость"};
 var trArrHelper = {"number_per_pallet":"шт",	"number_per_cubic_meter":"шт",	"weight":"кг",	"weight_pallet_and_block":"кг",	"strength_class":"-", "breaking_strength":"кг/см<sup>2</sup>", "thermal_conductivity":"Вт/м*C<sup>0</sup>",	"frost_resistance":"Циклов"};
 var addTransportCols = ['',	'name','capacity','dimensions','pallets','rate','mcad','inside_mcad','inside_ttk','inside_sad_kolco'];
-var btnsObj = $('<td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>')
+var btnsObj = $('<td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></td>')
 
 // usage sample
 // addInpData(inputDataItems, 'blocks', {});
@@ -253,7 +253,7 @@ $(function() {
 		if (confirm('Удалить данный транспорт?') === true) {
 			$.post('ajax.php?deleteTransport='+id, function(data) {
 				$(thisEl).parents('tr').remove();		
-		});
+			});
 		}
 	});
 
@@ -286,8 +286,61 @@ $(function() {
 		console.log(id);
 		if(typeof id === 'undefined') return;
 
-		var $row = addCustomRow($('.'+id + ' table'), 1, ['name'], btnsObj);
+		var $row = addCustomRow($('#'+id + ' table'), 1, ['name'], btnsObj);
 		chColsToInput($row);
+		$row.find('.glyphicon-pencil').removeClass('glyphicon-pencil').addClass('glyphicon-ok');
+	});
+
+	$(document).on('click','#admin-payment .glyphicon-pencil, #admin-delivery .glyphicon-pencil', function(e) {
+		e.preventDefault();
+		var $row = $(this).parents('tr');
+		chColsToInput($row);
+		$(this).removeClass('glyphicon-pencil').addClass('glyphicon-ok');
+	});
+
+	$(document).on('click', '#admin-payment .glyphicon-ok, #admin-delivery .glyphicon-ok', function(e) {
+		e.preventDefault();
+		var $row = $(this).parents('tr');
+		var id = '';
+
+		if(typeof $row.attr('name') == 'undefined') {
+			console.log(false)
+		} else {
+			id = $row.attr('name').split('id').join('');
+		}
+
+		var action = $row.parents('div').attr('id');
+		var rowData = getRowData($row);
+		var thisEl = this;
+		chInputToCols($row);
+		if(rowData === false) return;
+
+		$.post('ajax.php?change-'+action+'='+id, {'data':rowData}, function(data) {
+			$(thisEl).removeClass('glyphicon-ok').addClass('glyphicon-pencil');			
+		});
+
+	});
+
+	$('#admin-payment .glyphicon-remove, #admin-delivery .glyphicon-remove').on('click', function(e) {
+		e.preventDefault();
+
+		var $row = $(this).parents('tr');
+		var id = '';
+		var thisEl = this;
+
+		if(typeof $row.attr('name') == 'undefined') {
+			console.log(false)
+		} else {
+			id = $row.attr('name').split('id').join('');
+		}
+
+		var action = $row.parents('div').attr('id');
+
+		if (confirm('Вы уверенны, что хотите удалить этот пункт?') === true) {
+			$.post('ajax.php?delete-'+action+'='+id, function(data) {
+				$(thisEl).parents('tr').remove();		
+			});
+		}
 	});
 
 
@@ -799,7 +852,7 @@ function addCustomRow($table, n, names, buttons) {
 		$tr.append($col);
 	}
 
-	if(buttons) $tr.append(buttons);
+	if(buttons) $tr.append(buttons.clone());
 	$tbody.append($tr);
 
 	return $tr;

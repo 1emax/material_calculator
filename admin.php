@@ -275,7 +275,12 @@ include(__DIR__ . '/index.php');
 
       <h2 class="sub-header">Оплата</h2>      
 
-      <div class="table-responsive admin-payment">
+      <div id="admin-payment" class="table-responsive">
+       <?php $db = new DB();
+          	$db->select();
+          	$db->table('payments');
+          	$payments = $db->get();
+          ?>
         <table class="table table-striped">
           <thead>
             <tr>
@@ -284,22 +289,17 @@ include(__DIR__ . '/index.php');
               <th></th>
             </tr>
           </thead>
+
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>Предоплата наличными деньгами</td>
+          <?php foreach($payments as $k => $payment) { ?>
+
+          	 <tr name="id<?php echo $payment['id']; ?>">
+              <td><?php echo $k+1; ?></td>
+              <td><?php echo $payment['name']; ?></td>
               <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
             </tr>
-            <tr>
-              <td>2</td>
-              <td>Предоплата безналичными деньгами</td>
-              <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Оплата наличными деньгами на объекте</td>
-              <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
-            </tr>            
+
+          <?php } ?>          
           </tbody>
         </table>
         <div class="col-sm-2 col-md-2 col-md-offset-9 col-md-offset-9">
@@ -312,7 +312,12 @@ include(__DIR__ . '/index.php');
       <h2 class="sub-header">Доставка</h2>
       
 
-      <div class="table-responsive admin-delivery">
+      <div id="admin-delivery" class="table-responsive">
+       <?php $db = new DB();
+          	$db->select();
+          	$db->table('deliveries');
+          	$deliveries = $db->get();
+          ?>
         <table class="table table-striped">
           <thead>
             <tr>
@@ -322,21 +327,15 @@ include(__DIR__ . '/index.php');
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>Самовывоз</td>
+          <?php foreach($deliveries as $k => $delivery) { ?>
+
+          	<tr name="id<?php echo $delivery['id']; ?>">
+              <td><?php echo $k+1; ?></td>
+              <td><?php echo $delivery['name']; ?></td>
               <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
             </tr>
-            <tr>
-              <td>2</td>
-              <td>Доставка с разгрузкой</td>
-              <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Доставка без разгрузки</td>
-              <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
-            </tr>            
+
+          <?php } ?>     
           </tbody>
         </table>
         <div class="col-sm-2 col-md-2 col-md-offset-9 col-md-offset-9">
