@@ -67,9 +67,9 @@ include(__DIR__ . '/index.php');
   <div class="row">
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
-        <li class="active"><a href="#">Продукция <span class="sr-only">(current)</span></a></li>
-        <!-- <li><a href="#">Reports</a></li>
-        <li><a href="#">Analytics</a></li>
+        <li class="active"><a href="#tab-manufacturers">Производители <span class="sr-only">(current)</span></a></li>
+        <li><a href="#tab-products">Продукция</a></li>
+        <!-- <li><a href="#">Analytics</a></li>
         <li><a href="#">Export</a></li> -->
       </ul>
       <!-- <ul class="nav nav-sidebar">
@@ -85,28 +85,27 @@ include(__DIR__ . '/index.php');
         <li><a href="">Another nav item</a></li>
       </ul> -->
     </div>
-    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div id="tab-manufacturers" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main sub-tab">
       <h1 class="page-header">Производители</h1> 
+    </div>
+    <div id="tab-products" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main hide sub-tab">
+      <h1 class="page-header">Продукты</h1> 
 
 	  <ul class="nav nav-pills" role="tablist">
-      <li class="dropdown">
-		  <a id="dLabel" data-target="#" class="dropdown-toggle" href="http://example.com" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-		    ПроффСтрой
-		    <span class="caret"></span>
-		  </a>
+	      <li class="dropdown">
+			  <a id="dLabel" data-target="#" class="dropdown-toggle" href="http://example.com" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+			    ПроффСтрой
+			    <span class="caret"></span>
+			  </a>
 
-		  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-		  <li><a role="menuitem" tabindex="-1" href="https://twitter.com/fat">ПроффСтрой</a></li>
-		  </ul>
-	  </li></ul>
-<br>
-<br>
-	  
-
+			  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+			  <li><a role="menuitem" tabindex="-1" href="https://twitter.com/fat">ПроффСтрой</a></li>
+			  </ul>
+		  </li>
+	  </ul>
+	  <br>
+	  <br>
       <!-- <h2 class="sub-header">Section title</h2> -->
-      
-
-            
 
         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
         <?php 
@@ -166,10 +165,8 @@ include(__DIR__ . '/index.php');
 		    </div>
 		  </div>
             <?php } ?>		  
-		  
 		</div>
-
-    </div>
+	</div>
   </div>
 </div>
 

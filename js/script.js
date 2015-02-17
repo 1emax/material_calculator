@@ -343,6 +343,17 @@ $(function() {
 		}
 	});
 
+	$(document).on('click', '#manufacturers .nav-sidebar li a', function(e) {
+		e.preventDefault();
+		var $curTabs = $('#manufacturers .sub-tab');
+		var href = $(this).attr('href');
+		if(href == '#' + $curTabs.filter(':not(.hide)').attr('id')) return;
+
+		$curTabs.addClass('hide');
+		$curTabs.filter(href).removeClass('hide');
+		$(this).parent().addClass('active').siblings('li').removeClass('active');
+	});
+
 
 });
 

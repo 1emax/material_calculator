@@ -238,6 +238,10 @@ input.incorrect {
 	color:red;
 	cursor: pointer;
 }
+
+.tab-pane .sidebar {
+	overflow: hidden;
+}
 /*select {
 	width: 250px;
 }
