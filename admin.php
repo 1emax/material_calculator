@@ -174,7 +174,7 @@ include(__DIR__ . '/index.php');
 			              <td name="density"><?php echo $oneN; ?></td>
 			              <td name="price"><?php echo number_format($oneProdCharact['price'],0,'.',' '); ?></td>
 			              <td>
-			              	<span class="admin-characts" title="Редактировать характеристики">Характеристики </span>
+			              	<span class="admin-characts <?php if(!ifFullCharacts($oneProdCharact)) echo 'not-full';?>" title="Редактировать характеристики">Характеристики </span>
 			              	<span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span>
 			              	<span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span>
 			              	</td>
@@ -452,6 +452,95 @@ include(__DIR__ . '/index.php');
 </div><!-- /.modal -->
 <script src="http://api-maps.yandex.ru/2.1/?lang=ru-RU" type="text/javascript"> </script>
 
+
+
+
+<div class="modal fade" id="product-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabelProd" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabelProd">Modal title</h4>
+      </div>
+      <div class="modal-body col-lg-12 col-md-12 col-sm-12">
+        <div class="col-lg-12 col-md-12 col-sm-12 row">
+        	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="number_per_pallet">
+        		<div class="col-lg-5 col-md-5 col-sm-5">
+        			<span>Кол-во на 1 поддоне:</span>
+        		</div>
+        		<div class="col-lg-7 col-md-7 col-sm-7">
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">
+        		</div>
+        	</div>
+        	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="number_per_cubic_meter">
+        		<div class="col-lg-5 col-md-5 col-sm-5">
+        			<span>Кол-во в 1 м<sup>3</sup>:</span>        			
+        		</div>
+        		<div class="col-lg-7 col-md-7 col-sm-7">
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        		</div>
+        	</div>
+        	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="weight">
+        		<div class="col-lg-5 col-md-5 col-sm-5">
+        			<span>Вес блока:</span>        			
+        		</div>
+        		<div class="col-lg-7 col-md-7 col-sm-7">
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        		</div>
+        	</div>
+        	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="weight_pallet_and_block">
+        		<div class="col-lg-5 col-md-5 col-sm-5">
+        			<span>Вес поддона с блоками:</span>        			
+        		</div>
+        		<div class="col-lg-7 col-md-7 col-sm-7">
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        		</div>
+        	</div>
+        	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="strength_class">
+        		<div class="col-lg-5 col-md-5 col-sm-5">
+        			<span>Класс прочности:</span>        			
+        		</div>
+        		<div class="col-lg-7 col-md-7 col-sm-7">
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        		</div>
+        	</div>
+        	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="breaking_strength">
+        		<div class="col-lg-5 col-md-5 col-sm-5">
+        			<span>Теплопроводность:</span>        			
+        		</div>
+        		<div class="col-lg-7 col-md-7 col-sm-7">
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        		</div>
+        	</div>
+        	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="thermal_conductivity">
+        		<div class="col-lg-5 col-md-5 col-sm-5">
+        			<span>Морозостойкость:</span>        			
+        		</div>
+        		<div class="col-lg-7 col-md-7 col-sm-7">
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        		</div>
+        	</div>
+        	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="frost_resistance">
+        		<div class="col-lg-5 col-md-5 col-sm-5">
+        			<span>Адрес:</span>        			
+        		</div>
+        		<div class="col-lg-7 col-md-7 col-sm-7">
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        		</div>
+        	</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+        <button type="button" class="btn btn-primary" id="admin_save_prod_charact">Сохранить</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
 </body>
 </html>
 
@@ -481,6 +570,17 @@ function countSubArr($arr) {
 	}
 
 	return $count;
+}
+
+function ifFullCharacts($oneProdCharact) {
+	$except = array('number_per_pallet','number_per_cubic_meter','weight','weight_pallet_and_block','strength_class','breaking_strength','thermal_conductivity','frost_resistance');
+
+	foreach($except as $val) {
+		if(is_null($oneProdCharact[$val])) return false;
+	}
+
+	return true;
+
 }
 
 ?>

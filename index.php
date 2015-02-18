@@ -38,13 +38,23 @@ class Calc {
 
 		$db->query = rtrim($db->query, ", ");
 		$db->where('id=' . $id);
+		echo $db->query;
 		$db->set();
+	}
+
+	public function get($table, $id, $colums) {
+		$db = $this->db;
+		$db->select(implode(',', $colums));
+		$db->table($table);
+		$db->where('id='.$id);
+
+		return $db->get();		
 	}
 
 	public function getCategories() {
 		$db = $this->db;
 
-		$db->select('DISTINCT pc.id,pc.name');		
+		$db->select('DISTINCT pc.id,pc.name');
 		$db->table('product_category');
 		$db->join('product_material', array('id'=>'category_id'), 'pc'); // could be third parameter like inner, left, right
 		return $db->get();
@@ -87,6 +97,7 @@ class Calc {
 		$db->table('product_material');
 		$db->join('product_features', array('id'=>'product_id'), 'p');
 		$db->where('p.id in '."('$sIds')" . $withManufacturer);
+		$db->query .= ' ORDER BY product_features.id';
 
 		// echo $db->query;
 

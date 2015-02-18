@@ -99,7 +99,7 @@ if (isset($G['getItems'])) {
 		$Manufacturer->delete(intval($G['id']));
 	}
 } elseif (isset($G['type']) && $G['type']=='product') {
-	$id = $G['id'];
+	$id = intval($G['id']);
 	$data = $P['data'];
 	// $materialId = $G['material_id'];
 // echo print_r($data, 1);
@@ -111,6 +111,20 @@ if (isset($G['getItems'])) {
 	}
 } elseif (isset($G['deleteProduct'])) {
 	$Calc->delete('product_features', intval($G['deleteProduct']));
+} elseif (isset($G['getInfo']) && $G['getInfo'] != '') {
+	$id = intval($G['id']);
+	$table = $G['getInfo'];
+
+	$result=$Calc->get($table,$id, $P['data']);
+
+	echo json_encode($result[0]);
+} elseif (isset($G['setInfo']) && $G['setInfo'] != '') {
+	$id = intval($G['id']);
+	$table = $G['setInfo'];
+
+	$result=$Calc->change($table,$id, $P['data']);
+
+	// echo json_encode($result[0]);
 }
 
 

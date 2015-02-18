@@ -264,6 +264,11 @@ span.admin-characts.not-full {
 	color:red;
 }
 
+span.admin-characts.donotclick {
+	color:gray;
+	cursor: not-allowed;
+}
+
 
 /*select {
 	width: 250px;

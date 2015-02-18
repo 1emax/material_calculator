@@ -477,6 +477,8 @@ $(function() {
 		delete rowData.length;
 
 		$(this).removeClass('glyphicon-ok').addClass('glyphicon-pencil');
+		$(this).siblings('.admin-characts').removeClass('donotclick');
+
 
 		$.post('ajax.php?type=product&material_id='+materialId+'&id='+id, {data:rowData}, function(data) {
 			console.log(data);
@@ -489,6 +491,7 @@ $(function() {
 		chColsToInput($row);
 		$row.find('input').eq(0).focus();
 		$(this).removeClass('glyphicon-pencil').addClass('glyphicon-ok');
+		$(this).siblings('.admin-characts').addClass('donotclick');
 	});
 
 	$('#tab-products .glyphicon-remove').on('click', function(e) {
@@ -509,8 +512,65 @@ $(function() {
 				$(thisEl).parents('tr').remove();		
 			});
 		}
+	});
+
+	$('.admin-characts').on('click', function(e) {
+		var $row = $(this).parents('tr');
+		var id = $row.attr('name').split('id').join('');
+		var $modal = $('#product-modal').modal('show');
+		$('#myModalLabelProd').text('Характеристики продукта');
+		$modal.find('.modal-body').attr('parent', id);
+
+		var width = parseInt( $row.find('td[name=width]').text() );
+		var height = parseInt( $row.find('td[name=height]').text() );
+		var length = parseInt( $row.find('td[name=length]').text() );
+		var fNumber_per_cubic_meter = Math.ceil( (1.00/(length/1000)/(height/1000)/(width/1000))*100)/100;
+
+		var iNumber_per_pallet = Math.ceil(fNumber_per_cubic_meter * 1.44);
 
 
+		$.post('ajax.php?getInfo=product_features&id='+id, {data:["number_per_pallet","number_per_cubic_meter","weight","weight_pallet_and_block","strength_class","breaking_strength","thermal_conductivity","frost_resistance"]}, function(data) {
+			
+			if(typeof data.number_per_pallet !== 'undefined') {
+				for(var i in data) {
+
+					if(i == 'number_per_pallet' && (data[i] == '' || data[i] == null) ) data[i] = iNumber_per_pallet;
+					if(i == 'number_per_cubic_meter' && (data[i] == '' || data[i] == null) ) data[i] = fNumber_per_cubic_meter;
+
+					$modal.find('div[name='+i + '] input').val(data[i]);
+				}
+			}
+
+		}, 'json');
+	});
+
+	$('#admin_save_prod_charact').on('click', function() {
+		var values = {};
+		var names = ["number_per_pallet","number_per_cubic_meter","weight","weight_pallet_and_block","strength_class","breaking_strength","thermal_conductivity","frost_resistance"];
+		var $modal = $('#product-modal');
+		$modal.modal('hide');
+		var name = '';
+		var hasEmpty = false;
+		var id = $(this).parent().siblings('.modal-body').attr('parent');
+		var val = '';
+
+
+		for(var i in names) {
+			name = names[i];
+			val = $modal.find('div[name='+name + '] input').val();
+
+			if(val != '' && val.length != 0) {
+				values[name] = val;
+			} else {
+				hasEmpty = true;
+			}
+		}
+
+		if(!hasEmpty) $('table tr[name=id'+id+'] .admin-characts').removeClass('not-full');
+
+		$.post('ajax.php?setInfo=product_features&id='+id, {data:values}, function(data) {
+
+		});
 	});
 
 
