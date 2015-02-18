@@ -646,13 +646,16 @@ $(function() {
 			$forMeteres.find('.material_price').text(formData.price);
 			$forMeteres.find('.material_comn_price').text(Math.ceil(formData.price * meters*100)/100);
 
+			$currentBlock.trigger('tablechanged');
 		});
 
 		$(document).on('blockdeleted', '.added_block form', function(e) {
 			var $form = $(this);
 			var stackNumber = $form.attr('name');
 			var $currentBlock = $('.meters-row[name='+stackNumber+'],.numbers-row[name='+stackNumber+']');
+			var $parent = $currentBlock.parent();
 			$currentBlock.remove();
+			$parent.trigger('tablechanged');
 		});
 
 		$(document).on('tablechanged', '#order_detail, #order_detail_delivery', function(e) {
@@ -916,6 +919,7 @@ function showUnvisible() {
 	$( "#date_of_prepayment, #delivery_date, #shipment_date" ).datepicker( $.datepicker.regional[ "ru" ] );
 
 	$(document).on('click', '.close', function(e) {
+		$(this).siblings('.added_block').find('form').trigger('blockdeleted');
 		$(this).parents('.form_cont').remove();
 	});
 
@@ -1090,7 +1094,7 @@ function bothSelected($el, size, density, $tableBody) {
 		var item = data[i];
 		if(item['size']==size && item['density']==density) {
 			createTableFull($tableBody, item);
-			$parent.parent().find('.number .n').trigger('change');
+			$parent.parent().find('.number .n').val(1).trigger('change');
 			return true;
 		}
 	}
@@ -1143,6 +1147,8 @@ function changeInps($parent, iam,perMeter,perPallet, val, $grandpa) {
 			$parent.find('.pallet').val( Math.ceil((val*perMeter)/perPallet) );
 		break;
 	}
+	$parent.trigger('blockchanged');
+	
 	return;
 }
 
