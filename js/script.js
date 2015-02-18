@@ -176,7 +176,7 @@ $(function() {
 		if(blocksNumber > 1) {
 			blocksNumber = $('.blocks .block form:last').attr('name');
 		}
-		
+
 		$bl.find('form').attr('name', blocksNumber+1);
 
 		$bl.find('select').selectmenu()
@@ -650,11 +650,23 @@ $(function() {
 
 		$(document).on('blockdeleted', '.added_block form', function(e) {
 			var $form = $(this);
-
 			var stackNumber = $form.attr('name');
-
 			var $currentBlock = $('.meters-row[name='+stackNumber+'],.numbers-row[name='+stackNumber+']');
 			$currentBlock.remove();
+		});
+
+		$(document).on('tablechanged', '#order_detail, #order_detail_delivery', function(e) {
+			var tmpV = 0.00;
+
+			$(this).find('.numbers-row .material_comn_price').each(function(i, el){ 
+				var val = $(el).text();
+				if(val == '') val = 0;
+				tmpV+= parseFloat(val);
+			});
+
+			tmpV = (Math.ceil(tmpV*100)/100).toString().replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
+
+			$(this).find('.not_deliv_total_cost').text(tmpV +' руб.')
 		});
 	}
 
