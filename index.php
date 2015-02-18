@@ -93,7 +93,7 @@ class Calc {
 		if($manufacturer_id > 0) $withManufacturer = ' AND product_features.manufacturer_id =' . intval($manufacturer_id);
 
 		$db = $this->db;
-		$db->select('p.id as pid, p.manufacturer_id as manuf_id, product_features.*');		
+		$db->select('p.id as pid, p.manufacturer_id as manuf_id, p.name as name, product_features.*');		
 		$db->table('product_material');
 		$db->join('product_features', array('id'=>'product_id'), 'p');
 		$db->where('p.id in '."('$sIds')" . $withManufacturer);

@@ -14,6 +14,22 @@ var btnsObj = $('<td><span class="glyphicon glyphicon-pencil" aria-hidden="true"
 var isAdmin = false;
 
 
+var blockAdd ='<tr class="numbers-row">\
+				<td rowspan="2" class="rowspaned material-name"></td>\
+				<td rowspan="2" class="rowspaned material-size"></td>\
+				<td rowspan="2" class="rowspaned material-density"></td>\
+				<td>шт.</td>\
+				<td class="material_number"></td>\
+				<td class="material_price"></td>\
+				<td class="material_comn_price"></td>\
+			</tr>\
+			<tr class="meters-row">\
+				<td>м<sup>3</sup></td>\
+				<td class="material_number"></td>\
+				<td class="material_price"></td>\
+				<td class="material_comn_price"></td>\
+			</tr>';
+
 // usage sample
 // addInpData(inputDataItems, 'blocks', {});
 // addInpData(inputDataItems['blocks'], 'length', 0);
@@ -120,7 +136,8 @@ $(function() {
 
 	// block input data
 	$(document).on('click','#add_block', function(e){
-		if($('.form_cont.block').length >= 4) return;
+		var blocksNumber = $('.form_cont.block').length;
+		if(blocksNumber >= 4) return;
 
 		var $mater = $('#products #material').find('option:selected');
 		var $manufctr = $('#products #manufacturer').find('option:selected');
@@ -155,6 +172,12 @@ $(function() {
 		$bl.find('select option:not(.not_sel)').remove();
 		createOption($bl.find('select.size'), chAvai['size'], 'size');
 		createOption($bl.find('select.density'), chAvai['density'], 'density');
+
+		if(blocksNumber > 1) {
+			blocksNumber = $('.blocks .block form:last').attr('name');
+		}
+		
+		$bl.find('form').attr('name', blocksNumber+1);
 
 		$bl.find('select').selectmenu()
 	      .selectmenu( "menuWidget" )
@@ -573,6 +596,68 @@ $(function() {
 		});
 	});
 
+	if(!isAdmin) {
+		$(document).on('blockchanged', '.added_block form', function(e) {
+			var $form = $(this);
+			var formData = $form.data('el');
+			var options = $form.find('select option:selected:not(.not_sel)');
+			if(options.length != 2) return;
+
+			var meters = $form.find('.number .m3').val();
+			var numbers = $form.find('.number .n').val();
+			var stackNumber = $form.attr('name');
+
+			var $currentBlock = $('.meters-row[name='+stackNumber+'],.numbers-row[name='+stackNumber+']');
+
+			if($currentBlock.length == 0) {
+				var $lastResultRow = $('#order_detail .meters-row:last, #order_detail_delivery .meters-row:last');
+				var $currentBlock = $(blockAdd).clone();
+				$currentBlock.attr('name', stackNumber);
+
+				if($lastResultRow.length == 0) {
+					$('#order_detail table tbody').prepend($currentBlock);
+					$('#order_detail_delivery table tbody').prepend($currentBlock.clone());
+
+				} else {
+					$lastResultRow.after($currentBlock);
+				}
+
+				$currentBlock = $('.meters-row[name='+stackNumber+'],.numbers-row[name='+stackNumber+']');
+			}
+
+			var $forNumbers = $currentBlock.filter('.numbers-row');
+			var $forMeteres = $currentBlock.filter('.meters-row');
+
+			// number row
+			$forNumbers.find('.material-name').text(formData.name);
+			$forNumbers.find('.material-size').text(formData.size);
+			$forNumbers.find('.material-density').text('D' + formData.density);
+
+
+			$forNumbers.find('.material_number').text(numbers);
+			var nPrice = Math.ceil(formData.price/formData.number_per_cubic_meter*100)/100;
+			$forNumbers.find('.material_price').text( nPrice );
+			$forNumbers.find('.material_comn_price').text(Math.ceil(numbers*nPrice*100)/100);
+
+
+
+			//meters row
+			$forMeteres.find('.material_number').text(meters);
+			$forMeteres.find('.material_price').text(formData.price);
+			$forMeteres.find('.material_comn_price').text(Math.ceil(formData.price * meters*100)/100);
+
+		});
+
+		$(document).on('blockdeleted', '.added_block form', function(e) {
+			var $form = $(this);
+
+			var stackNumber = $form.attr('name');
+
+			var $currentBlock = $('.meters-row[name='+stackNumber+'],.numbers-row[name='+stackNumber+']');
+			$currentBlock.remove();
+		});
+	}
+
 
 });
 
@@ -934,11 +1019,12 @@ function createTableDensity($parent, $arr) {
 
 function createTableFull($parent, $arr) {
 	$parent.empty();
+	$parent.parents('.form_cont.block').find('form').data('el', $arr);
 	
 	for(var i in trArr) {
 		var el = trArr[i]; // el - name, i - key
-		$parent.append('<tr name="'+i+'"><td>'+el+'</td><td>'+$arr[i]+'</td><td>'+trArrHelper[i]+'</td></tr>');
-		if(i == 'number_per_cubic_meter') $parent.append('<tr name="cubic_per_pallet"><td>Кол-во м<sup>3</sup> на 1 поддоне</td><td>'+($arr['number_per_pallet']/$arr['number_per_cubic_meter']).toFixed(2)+'</td><td>м<sup>3</sup></td></tr>');
+		$parent.append('<tr name="'+i+'"><td>'+el+'</td><td  class="val">'+$arr[i]+'</td><td>'+trArrHelper[i]+'</td></tr>');
+		if(i == 'number_per_cubic_meter') $parent.append('<tr name="cubic_per_pallet"><td>Кол-во м<sup>3</sup> на 1 поддоне</td><td class="val">'+($arr['number_per_pallet']/$arr['number_per_cubic_meter']).toFixed(2)+'</td><td>м<sup>3</sup></td></tr>');
 	}
 }
 
@@ -958,6 +1044,12 @@ function addBlockListeners($block) {
 
 		var $tableBody = $elem.parents('.form_cont').find('.characteristic_block tbody');
 		if(!bothSelected($elem, false, true, $tableBody)) createTableDensity($tableBody, $elem.data('el'));
+
+		var $parentBlock = $(this).parents('.added_block');
+		var origHeight = $parentBlock.css('height', '').outerHeight();
+
+		var height = $parentBlock.siblings('.characteristic_block').height();
+		if(origHeight < height) $parentBlock.css('height', height+15);
 	}});
 }
 
@@ -996,24 +1088,24 @@ function onNumberInInpCh() {
 	$(document).on('keypress keyup change','.added_block .number .m3', function(e) {
 		var $parent = $(this).parents('.number');
 		var $grandpa = $(this).parents('.form_cont');
-		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td:last').text();
-		var perPallet = $grandpa.find('tr[name=number_per_pallet] td:last').text();
+		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td.val').text();
+		var perPallet = $grandpa.find('tr[name=number_per_pallet] td.val').text();
 		var myVal = $(this).val();
 		changeInps($parent,'', perMeter, perPallet, myVal, $grandpa);
 	});
 	$(document).on('keypress keyup change','.added_block .number .n', function(e) {
 		var $parent = $(this).parents('.number');
 		var $grandpa = $(this).parents('.form_cont');
-		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td:last').text();
-		var perPallet = $grandpa.find('tr[name=number_per_pallet] td:last').text();
+		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td.val').text();
+		var perPallet = $grandpa.find('tr[name=number_per_pallet] td.val').text();
 		var myVal = $(this).val();
 		changeInps($parent,'number', perMeter, perPallet, myVal, $grandpa);
 	});
 	$(document).on('keypress keyup change','.added_block .number .pallet', function(e) {
 		var $parent = $(this).parents('.number');
 		var $grandpa = $(this).parents('.form_cont');
-		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td:last').text();
-		var perPallet = $grandpa.find('tr[name=number_per_pallet] td:last').text();
+		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td.val').text();
+		var perPallet = $grandpa.find('tr[name=number_per_pallet] td.val').text();
 		var myVal = $(this).val();
 		changeInps($parent,'pallet', perMeter, perPallet, myVal, $grandpa);
 	});
@@ -1021,9 +1113,9 @@ function onNumberInInpCh() {
 
 function changeInps($parent, iam,perMeter,perPallet, val, $grandpa) {
 	if($grandpa.find('select.size option:selected').hasClass('not_sel') || $grandpa.find('select.density option:selected').hasClass('not_sel')) return false;
-	if(isNaN(val)) val = 0;
-	if(isNaN(perPallet)) perPallet = 0;
-	if(isNaN(perMeter)) perMeter = 0;
+	if(isNaN(val) || val == '') val = 1;
+	if(isNaN(perPallet) || perPallet == '') perPallet = 1;
+	if(isNaN(perMeter) || perMeter == '') perMeter = 1;
 
 	switch(iam) {
 		case 'pallet':

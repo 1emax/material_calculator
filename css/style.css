@@ -209,6 +209,11 @@ div.characteristic_block, div.characteristic_mix {
 
 .ui-widget-content .ui-state-focus {
 	font-weight: 500;
+	padding-right: 10px;
+}
+
+.ui-widget-content .ui-menu-item {
+	padding-right: 10px;
 }
 
 #ya_map {
@@ -267,6 +272,10 @@ span.admin-characts.not-full {
 span.admin-characts.donotclick {
 	color:gray;
 	cursor: not-allowed;
+}
+
+#order_detail table td, #order_detail_delivery table td {
+	vertical-align: middle;
 }
 
 
