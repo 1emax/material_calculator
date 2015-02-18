@@ -98,8 +98,20 @@ if (isset($G['getItems'])) {
 	} elseif($action == 'delete') {
 		$Manufacturer->delete(intval($G['id']));
 	}
-}
+} elseif (isset($G['type']) && $G['type']=='product') {
+	$id = $G['id'];
+	$data = $P['data'];
+	// $materialId = $G['material_id'];
+// echo print_r($data, 1);
 
+	if($id > 0) {
+		$Calc->change('product_features', $id, $data);
+	} else {
+		$Calc->add('product_features', $data);
+	}
+} elseif (isset($G['deleteProduct'])) {
+	$Calc->delete('product_features', intval($G['deleteProduct']));
+}
 
 
 function getIds($val) {

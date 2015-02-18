@@ -229,7 +229,7 @@ input.incorrect {
 	border-color: red;
 }
 
-.glyphicon-pencil, .transport_list span.glyphicon-ok, #admin-payment span.glyphicon-ok, #admin-delivery span.glyphicon-ok {
+.glyphicon-pencil, .transport_list span.glyphicon-ok, #admin-payment span.glyphicon-ok, #admin-delivery span.glyphicon-ok, #tab-products span.glyphicon-ok, #tab-products span.glyphicon-pencil {
 	color:green;
 	cursor: pointer;
 }
@@ -254,6 +254,17 @@ input.incorrect {
 #ya_map.manufacturer-map {
 	margin-left: 15px;
 }
+
+span.admin-characts {
+	cursor: pointer;
+	color:green;
+}
+
+span.admin-characts.not-full {
+	color:red;
+}
+
+
 /*select {
 	width: 250px;
 }

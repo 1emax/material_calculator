@@ -68,8 +68,8 @@ include(__DIR__ . '/index.php');
   <div class="row">
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
-        <li class="active"><a href="#tab-manufacturers">Производители <span class="sr-only">(current)</span></a></li>
-        <li><a href="#tab-products">Продукция</a></li>
+        <li class="active"><a href="#tab-products">Продукция <span class="sr-only">(current)</span></a></li>
+        <li><a href="#tab-manufacturers">Производители</a></li>
         <!-- <li><a href="#">Analytics</a></li>
         <li><a href="#">Export</a></li> -->
       </ul>
@@ -86,17 +86,124 @@ include(__DIR__ . '/index.php');
         <li><a href="">Another nav item</a></li>
       </ul> -->
     </div>
-    <div id="tab-manufacturers" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main sub-tab">
+    
+    <div id="tab-products" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main  sub-tab">
+      <h1 class="page-header">Продукты</h1>
+
+      <?php $Manufacturer = new Manufacturer();
+  		$manufacturers = $Manufacturer->getAll();
+  		// print_r($manufacturers);
+  	  ?>
+	  <ul class="nav nav-pills" role="tablist">
+	      <li class="dropdown">
+			  <a id="dLabel" data-target="#" class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+			    ПроффСтрой
+			    <span class="caret"></span>
+			  </a>
+
+			  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+			  <?php foreach($manufacturers as $oneManufacturer) { ?>
+			  	<li>
+			  		<a role="menuitem" tabindex="-1" href="#" name="<?php echo $oneManufacturer['id']; ?>"><?php echo $oneManufacturer['name']; ?>
+			  		</a>
+			  	</li>
+			  <?php } ?>
+			  </ul>
+		  </li>
+	  </ul>
+	  <br>
+	  <br>
+      <!-- <h2 class="sub-header">Section title</h2> -->
+
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" manufacturerid="1"> <!-- manufacturer_id -->
+        <?php 
+        $materials=$Calc->getMaterials(1); //  category_id
+        $matIds = array_map('getIds', $materials);
+		$charactsRaw = $Calc->MaterialsCharct(implode($matIds, "','"), 1); //materials id`s, manufacturer_id
+		$characts = charactByPid($charactsRaw);
+
+        foreach($materials as $k => $material) { 
+        	?>
+
+		  <div class="panel panel-default">
+		    <div class="panel-heading" role="tab" id="head<?php echo 'mater'.$material['id'];?>">
+		      <h4 class="panel-title">
+		        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#<?php echo 'mater'.$material['id'];?>" aria-expanded="false" aria-controls="<?php echo 'mater'.$material['id'];?>" name="<?php echo $material['id']; ?>">
+		        <?php 
+				
+					$prodN = isset($characts[$material['id']]) ? countSubArr($characts[$material['id']]) : 0;
+				?>
+		          <?php echo ($k+1) . '. ' . $material['name'] . ' ('.$prodN.')' ; ?>
+		        </a>
+		      </h4>
+		    </div>
+		    <div id="<?php echo 'mater'.$material['id'];?>" class="panel-collapse collapse material" role="tabpanel" aria-labelledby="head<?php echo 'mater'.$material['id'];?>">
+		      <div class="panel-body">
+		        <div class="table-responsive">
+
+		        	
+			        <table class="table table-striped">
+			          <thead>
+			            <tr>
+			              <th>#</th>
+			              <th>Длина</th>
+			              <th>Высота</th>
+			              <th>Ширина</th>
+			              <th>Плотность</th>
+			              <th>Цена (1 м<sup>3</sup>) в руб.</th>
+			              <th></th>
+			              <th></th>
+			              <th></th>
+			            </tr>
+			          </thead>
+			          <tbody>
+		      <?php if($prodN > 0) { ?> 
+			          <?php 
+		        	$oneProdCharactsArr = $characts[$material['id']]; //print_r($oneProdCharacts);
+		        	?>
+			          <?php $oneCounter = 1; 
+			          foreach($oneProdCharactsArr as $oneN => $oneProdCharacts) { 
+			          foreach($oneProdCharacts as  $oneProdCharact) { ?>
+			          <tr name="id<?php echo $oneProdCharact['id']; ?>">
+			          	<?php $sizes =  explode('x', $oneProdCharact['size']);
+			          	?>
+			              <td><?php echo $oneCounter++; ?></td>
+			              <td name="length"><?php echo $sizes[2]; ?></td>
+			              <td name="height"><?php echo $sizes[1]; ?></td>
+			              <td name="width"><?php echo $sizes[0]; ?></td>
+			              <td name="density"><?php echo $oneN; ?></td>
+			              <td name="price"><?php echo number_format($oneProdCharact['price'],0,'.',' '); ?></td>
+			              <td>
+			              	<span class="admin-characts" title="Редактировать характеристики">Характеристики </span>
+			              	<span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span>
+			              	<span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span>
+			              	</td>
+			           </tr>
+			           <?php }
+			           } ?>
+      			<?php } ?>
+			          </tbody>
+			        </table>			       
+      			</div>
+      			<div class="col-sm-2 col-md-2 col-md-offset-9 col-md-offset-9">
+			      	<button class="btn btn-success btn-xs for-admin-product"type="submit">
+			      		<span>Добавить</span>
+			      	</button>
+		    	</div>
+		      </div>
+		    </div>
+		  </div>
+            <?php } ?>		  
+		</div>
+	</div>
+	<div id="tab-manufacturers" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main hide sub-tab">
       <h1 class="page-header">Производители</h1>
       <div>
       	<button class="btn btn-success btn-xs  col-md-offset-1  col-sm-offset-1" id="for-admin-addmnanufacturer" type="submit"  data-toggle="modal" data-target="#myModal">
       		<span>Добавить производителя</span>
       	</button>
       	<div class="manufacturers_list">
-      		<?php $Manufacturer = new Manufacturer();
-      		$manufacturers = $Manufacturer->getAll();
-      		// print_r($manufacturers);
-      		?>
+      		
       		<table class="table table-striped">
 	          <thead>
 	            <tr>
@@ -124,90 +231,6 @@ include(__DIR__ . '/index.php');
       	</div>
       </div>
     </div>
-    <div id="tab-products" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main hide sub-tab">
-      <h1 class="page-header">Продукты</h1> 
-
-	  <ul class="nav nav-pills" role="tablist">
-	      <li class="dropdown">
-			  <a id="dLabel" data-target="#" class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-			    ПроффСтрой
-			    <span class="caret"></span>
-			  </a>
-
-			  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-			  <?php foreach($manufacturers as $oneManufacturer) { ?>
-			  	<li>
-			  		<a role="menuitem" tabindex="-1" href="#" name="<?php echo $oneManufacturer['id']; ?>"><?php echo $oneManufacturer['name']; ?>
-			  		</a>
-			  	</li>
-			  <?php } ?>
-			  </ul>
-		  </li>
-	  </ul>
-	  <br>
-	  <br>
-      <!-- <h2 class="sub-header">Section title</h2> -->
-
-        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-        <?php 
-        $materials=$Calc->getMaterials(1); 
-        $matIds = array_map('getIds', $materials);
-		$charactsRaw = $Calc->MaterialsCharct(implode($matIds, "','")); 
-		$characts = charactByPid($charactsRaw);
-
-        foreach($materials as $k => $material) { 
-        	?>
-
-		  <div class="panel panel-default">
-		    <div class="panel-heading" role="tab" id="head<?php echo 'prod'.$material['id'];?>">
-		      <h4 class="panel-title">
-		        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#<?php echo 'prod'.$material['id'];?>" aria-expanded="false" aria-controls="<?php echo 'prod'.$material['id'];?>" name="<?php echo $material['id']; ?>">
-		        <?php 
-				
-					$prodN = isset($characts[$material['id']]) ? count($characts[$material['id']]) : 0;
-				?>
-		          <?php echo ($k+1) . '. ' . $material['name'] . ' ('.$prodN.')' ; ?>
-		        </a>
-		      </h4>
-		    </div>
-		    <div id="<?php echo 'prod'.$material['id'];?>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="head<?php echo 'prod'.$material['id'];?>">
-		      <div class="panel-body">
-		      <?php if($prodN > 0) { ?> 
-		        <div class="table-responsive">
-
-		        	<?php 
-		        	$oneProdCharacts = $characts[$material['id']]; //print_r($oneProdCharacts);
-		        	?>
-			        <table class="table table-striped">
-			          <thead>
-			            <tr>
-			              <th>#</th>
-			              <th>Название</th>
-			              <th>Цена (1 м<sup>3</sup>)</th>
-			              <th></th>
-			              <th></th>
-			            </tr>
-			          </thead>
-			          <tbody>
-			          <?php $oneCounter = 1; foreach($oneProdCharacts as $oneN => $oneProdCharact) { ?>
-			          <tr>
-			              <td><?php echo $oneCounter++; ?></td>
-			              <td name="<?php echo $oneN; ?>"><?php echo 'D' . $oneN; ?></td>
-			              <td>2.590</td>
-			              <td><a href="#">Изменить</a></td>
-			              <td><a href="#">Удалить</a></td>
-			           </tr>
-			           <?php } ?>
-			          </tbody>
-			        </table>
-      			</div>
-      			<?php } ?>
-		      </div>
-		    </div>
-		  </div>
-            <?php } ?>		  
-		</div>
-	</div>
   </div>
 </div>
 
@@ -442,10 +465,22 @@ function charactByPid($charct) {
 	$res = array();
 
 	foreach ($charct as $value) {
-		$res[$value['pid']][$value['density']] = $value;
+		$res[$value['pid']][$value['density']][] = $value;
 	}
 
 	return $res;
+}
+
+function countSubArr($arr) {
+	$count = 0;
+
+	foreach ($arr as $subArr) {
+		foreach ($subArr as $el) {
+			$count++;
+		}
+	}
+
+	return $count;
 }
 
 ?>

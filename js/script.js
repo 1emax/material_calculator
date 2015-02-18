@@ -440,6 +440,80 @@ $(function() {
 		}
 	});
 
+	$(document).on('click', '.for-admin-product', function(e) {
+		var $table = $(this).parents('.panel-body').find('table');
+
+		var $row = addCustomRow($table, 5, ['length','height','width','density','price'], btnsObj);
+		chColsToInput($row);
+		$row.find('input').eq(0).focus();
+		$row.find('.glyphicon-pencil').removeClass('glyphicon-pencil').addClass('glyphicon-ok');
+	});
+
+	$(document).on('click', '#tab-products .glyphicon-ok', function(e) {
+		e.preventDefault();
+		var $row = $(this).parents('tr');
+		var id = '';
+		var materialId = $row.parents('.material').attr('id').split('mater').join('');
+
+		if(typeof $row.attr('name') == 'undefined') {
+			console.log(false)
+		} else {
+			id = $row.attr('name').split('id').join('');
+		}
+
+		var rowData = getRowData($row);
+		var thisEl = this;
+		chInputToCols($row);
+		if(rowData === false) return;
+
+		var manufacturer_id = $row.parents('#accordion').attr('manufacturerid');
+
+		rowData.product_id = materialId;
+		rowData['manufacturer_id'] = manufacturer_id;
+		rowData.price = rowData.price.replace(/[^\/\d]/g,'');
+		rowData.size = rowData.width + 'x' + rowData.height + 'x' + rowData.length;
+		delete rowData.width;
+		delete rowData.height;
+		delete rowData.length;
+
+		$(this).removeClass('glyphicon-ok').addClass('glyphicon-pencil');
+
+		$.post('ajax.php?type=product&material_id='+materialId+'&id='+id, {data:rowData}, function(data) {
+			console.log(data);
+		});
+	});
+
+	$(document).on('click', '#tab-products .glyphicon-pencil', function(e) {
+		e.preventDefault();
+		var $row = $(this).parents('tr');
+		chColsToInput($row);
+		$row.find('input').eq(0).focus();
+		$(this).removeClass('glyphicon-pencil').addClass('glyphicon-ok');
+	});
+
+	$('#tab-products .glyphicon-remove').on('click', function(e) {
+		e.preventDefault();
+		var $row = $(this).parents('tr');
+
+		var id = '';
+		var thisEl = this;
+
+		if(typeof $row.attr('name') == 'undefined') {
+			console.log(false)
+		} else {
+			id = $row.attr('name').split('id').join('');
+		}
+
+		if (confirm('Вы уверенны, что хотите удалить этот продукт?') === true) {
+			$.post('ajax.php?deleteProduct='+id, function(data) {
+				$(thisEl).parents('tr').remove();		
+			});
+		}
+
+
+	});
+
+
 });
 
 function initMap() {
@@ -736,7 +810,7 @@ function materCharactsAvaible(materId, manufctrId) {
 
 	for(var i in items) {
 		var el = items[i];
-		if(el['pid'] == materId && (manufctrIsset || el['manufacturer_id'] == manufctrId)) {
+		if(el['pid'] == materId && (manufctrIsset || el['manuf_id'] == manufctrId)) {
 			arrRes[el['id']] = [];
 
 			arrRes[el['id']] = {'size':el['size'],'density':el['density'],'id':el};
@@ -746,7 +820,7 @@ function materCharactsAvaible(materId, manufctrId) {
 			arrRes['size'][el['size']].push(el);
 			arrRes['density'][el['density']].push(el);			
 		} else {
-			console.log(el['pid'],materId,manufctrIsset ,el['manufacturer_id']);
+			console.log(el['pid'],materId,manufctrIsset ,el['manuf_id']);
 		}
 	}
 
