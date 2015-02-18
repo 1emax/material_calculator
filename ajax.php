@@ -87,6 +87,17 @@ if (isset($G['getItems'])) {
 	$db->query = 'DELETE FROM '.$table.' WHERE id='.$id;
 	$db->set();
 
+} elseif (isset($G['type']) && $G['type']=='manufacturer') {
+	$action = $G['action'];
+	$Manufacturer = new Manufacturer();
+
+	if($action == 'create') {
+		$Manufacturer->add($P['data']);
+	} elseif($action == 'change') {
+		$Manufacturer->change(intval($G['id']), current($P['data']));		
+	} elseif($action == 'delete') {
+		$Manufacturer->delete(intval($G['id']));
+	}
 }
 
 

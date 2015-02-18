@@ -48,7 +48,8 @@ include(__DIR__ . '/index.php');
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <span class="navbar-brand">Настройки</span>
+      <span class="navbar-brand"><a href=".">Расчеты</a></span>
+      <span class="navbar-brand">| Настройки |</span>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right nav-tabs" role="tablist">
@@ -86,20 +87,60 @@ include(__DIR__ . '/index.php');
       </ul> -->
     </div>
     <div id="tab-manufacturers" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main sub-tab">
-      <h1 class="page-header">Производители</h1> 
+      <h1 class="page-header">Производители</h1>
+      <div>
+      	<button class="btn btn-success btn-xs  col-md-offset-1  col-sm-offset-1" id="for-admin-addmnanufacturer" type="submit"  data-toggle="modal" data-target="#myModal">
+      		<span>Добавить производителя</span>
+      	</button>
+      	<div class="manufacturers_list">
+      		<?php $Manufacturer = new Manufacturer();
+      		$manufacturers = $Manufacturer->getAll();
+      		// print_r($manufacturers);
+      		?>
+      		<table class="table table-striped">
+	          <thead>
+	            <tr>
+	              <th>#</th>
+	              <th>Производитель</th>
+	              <th>Адрес</th>
+	              <th>Координаты</th>
+	              <th></th>
+	              <th></th>
+	            </tr>
+	          </thead>
+	          <tbody>
+			        <?php foreach($manufacturers as $manN => $oneManufacturer) { ?>
+	          	<tr name="id<?php echo $oneManufacturer['id']; ?>">
+	          	  <td><?php echo $manN+1; ?></td>
+	              <td name="name"><?php echo $oneManufacturer['name']; ?></td>
+	              <td name="address"><?php echo $oneManufacturer['address']; ?></td>
+	              <td name="coordinates"><?php echo $oneManufacturer['coordinates']; ?></td>
+	              <td><a href="#" class="manuf_change">Изменить</a></td>
+	              <td><a href="#" class="manuf_dalete">Удалить</a></td>
+	            </tr>
+			          <?php } ?>
+	          </tbody>
+            </table>
+      	</div>
+      </div>
     </div>
     <div id="tab-products" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main hide sub-tab">
       <h1 class="page-header">Продукты</h1> 
 
 	  <ul class="nav nav-pills" role="tablist">
 	      <li class="dropdown">
-			  <a id="dLabel" data-target="#" class="dropdown-toggle" href="http://example.com" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+			  <a id="dLabel" data-target="#" class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
 			    ПроффСтрой
 			    <span class="caret"></span>
 			  </a>
 
 			  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-			  <li><a role="menuitem" tabindex="-1" href="https://twitter.com/fat">ПроффСтрой</a></li>
+			  <?php foreach($manufacturers as $oneManufacturer) { ?>
+			  	<li>
+			  		<a role="menuitem" tabindex="-1" href="#" name="<?php echo $oneManufacturer['id']; ?>"><?php echo $oneManufacturer['name']; ?>
+			  		</a>
+			  	</li>
+			  <?php } ?>
 			  </ul>
 		  </li>
 	  </ul>
@@ -347,6 +388,47 @@ include(__DIR__ . '/index.php');
 </div>
 
 </div>
+<div class="modal fade" id="manufacturer-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body col-lg-12 col-md-12 col-sm-12">
+        <div class="col-lg-12 col-md-12 col-sm-12 row">
+        	<div class="onerow col-lg-12 col-md-12 col-sm-12">
+        		<div class="col-lg-3 col-md-3 col-sm-3">
+        			<span>Название:</span>
+        		</div>
+        		<div class="col-lg-9 col-md-9 col-sm-9">
+        			<input id="manuf_name" type="text" class="col-lg-12 col-md-12 col-sm-12">
+        		</div>
+        	</div>
+        	<div class="onerow col-lg-12 col-md-12 col-sm-12">
+        		<div class="col-lg-3 col-md-3 col-sm-3">
+        			<span>Адрес:</span>        			
+        		</div>
+        		<div class="col-lg-9 col-md-9 col-sm-9">
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12 admin-address" placeholder="Адрес доставки" id="deliv_address">  			
+        		</div>
+        	</div>
+        	<div class="onerow col-lg-12 col-md-12 col-sm-12">
+        		<span class="col-lg-4 col-md-4 col-sm-4">Координаты: </span>
+        		<span class="admin-coords"></span>
+        	</div>
+			<div id="ya_map" class="manufacturer-map col-lg-12 col-md-12 col-sm-12 "></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+        <button type="button" class="btn btn-primary" id="admin_save_manufacturer">Сохранить</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script src="http://api-maps.yandex.ru/2.1/?lang=ru-RU" type="text/javascript"> </script>
+
 </body>
 </html>
 

@@ -10,7 +10,9 @@ var inputDataItems = {"blocks":{"length":0,"items":{}},"mixes":{"length":0,"item
 var trArr = {"number_per_pallet":"Кол-во штук на 1 поддоне",	"number_per_cubic_meter":"Кол-во штук в 1 м<sup>3</sup>",	"weight":"Вес блока",	"weight_pallet_and_block":"Вес поддона с блоками",	"strength_class":"Класс прочности", "breaking_strength":"Предел прочности", "thermal_conductivity":"Теплопроводность",	"frost_resistance":"Морозостойкость"};
 var trArrHelper = {"number_per_pallet":"шт",	"number_per_cubic_meter":"шт",	"weight":"кг",	"weight_pallet_and_block":"кг",	"strength_class":"-", "breaking_strength":"кг/см<sup>2</sup>", "thermal_conductivity":"Вт/м*C<sup>0</sup>",	"frost_resistance":"Циклов"};
 var addTransportCols = ['',	'name','capacity','dimensions','pallets','rate','mcad','inside_mcad','inside_ttk','inside_sad_kolco'];
-var btnsObj = $('<td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></td>')
+var btnsObj = $('<td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></td>');
+var isAdmin = false;
+
 
 // usage sample
 // addInpData(inputDataItems, 'blocks', {});
@@ -199,6 +201,8 @@ $(function() {
 
 
 	//admin page
+    isAdmin = $('.modal-body .admin-coords').length > 0? true : false;
+
 	$('#navbar a').click(function (e) {
 	  e.preventDefault();
 
@@ -354,6 +358,87 @@ $(function() {
 		$(this).parent().addClass('active').siblings('li').removeClass('active');
 	});
 
+	$('#for-admin-addmnanufacturer').on('click', function(e) {
+		e.preventDefault();
+		$('#manufacturer-modal').modal();
+		$('#myModalLabel').text('Добавить производителя');
+
+		clearModal($('#manufacturer-modal'));	    
+	});
+
+	$('.manuf_change').on('click', function(e) {
+		e.preventDefault();
+		$('#manufacturer-modal').modal();
+
+		clearModal($('#manufacturer-modal'));
+
+		$('#myModalLabel').text('Изменить производителя');
+		var id = $(this).parents('tr').attr('name').split('id').join('');
+		$('#manufacturer-modal .modal-body').attr('parent', id);
+		
+
+	    $('#manuf_name').val($(this).parent().siblings('[name=name]').text());
+	    // debugger;
+	    $('#deliv_address').val($(this).parent().siblings('[name=address]').text());
+	    // поселок Лесные Поляны, Пушкинский район Центральная улица, 17
+		newMapPoint('.admin-coords', $('#deliv_address').val());
+		// Костыль от непонятного действия яндекс-карт
+		if(isAdmin){
+			myMap.setBounds(mapObjs.manufacturer.geometry.getBounds(),{
+                checkZoomRange: true // проверяем наличие тайлов на данном масштабе.
+            });
+		}
+	});
+
+	$(document).on('click', '#admin_save_manufacturer', function(e) {
+		e.preventDefault();
+		var parentId = $(this).parent().siblings('.modal-body').attr('parent');
+		$(this).parent().siblings('.modal-body').removeAttr('parent');
+		var creation = typeof parentId === 'undefined' ? true : false;
+		var name = $('#manuf_name').val();
+		var address = $('#deliv_address').val();
+		var coords = $('.modal-body .admin-coords').text();
+		var $tr = $('table tr[name=id'+parentId);
+		var action = creation ? 'create' : 'change';
+		var data = [];
+
+		if(creation) {
+			$tr = addCustomRow($('.manufacturers_list table'), 5, ['name', 'address','coordinates']);
+		}
+
+		$tr.find('td[name=name]').text(name);
+		$tr.find('td[name=address]').text(address);
+		$tr.find('td[name=coordinates]').text(coords);
+
+		data.push({'name':name, 'address':address, 'coordinates':coords});
+
+		$(this).parents('.modal').modal('hide');
+
+		$.post('ajax.php?action='+action+'&type=manufacturer&id='+parentId, {'data': data}, function(data) {
+			console.log(data);
+		});		
+	});
+	
+	$('.manufacturers_list .manuf_dalete').on('click', function(e) {
+		e.preventDefault();
+
+		var $row = $(this).parents('tr');
+		var id = '';
+		var thisEl = this;
+
+		if(typeof $row.attr('name') == 'undefined') {
+			console.log(false)
+		} else {
+			id = $row.attr('name').split('id').join('');
+		}
+
+
+		if (confirm('Вы уверенны, что хотите удалить этого производителя?') === true) {
+			$.post('ajax.php?action=delete&type=manufacturer&id='+id, function(data) {
+				$(thisEl).parents('tr').remove();		
+			});
+		}
+	});
 
 });
 
@@ -374,8 +459,10 @@ function initMap() {
             iconColor: '#0095b6'
         });
 
-	    myMap.geoObjects
-        .add(mapObjs['manufacturer']);
+	    if (!isAdmin) {
+	    	myMap.geoObjects
+        	.add(mapObjs['manufacturer']);
+        }
 
 		mapAutocomplete();
 	});  
@@ -388,7 +475,7 @@ function initMap() {
 
 function mapAutocomplete() {
 	var suggestView = new ymaps.SuggestView('deliv_address');
-
+// /admin-address
 	suggestView.events.add('select',function(e) {
 		ymaps.geocode(e.get('item').value, {
 			results: 1 
@@ -407,10 +494,39 @@ function mapAutocomplete() {
             });
             // debugger;
 
+            $('.modal-body .admin-coords').text(coords);
+
+            if(isAdmin) {
+    			if(typeof mapObjs['manufacturer'] !== 'undefined') myMap.geoObjects.remove(mapObjs['manufacturer']);
+
+
+       //      	mapObjs['manufacturer'] = new ymaps.Placemark(coords, {
+		     //        balloonContent: '<strong>'+$('#manuf_name').val()+'</strong>'
+		     //    }, {
+		     //        preset: 'islands#icon',
+		     //        iconColor: '#0095b6'
+		     //    });
+
+
+
+		    	// myMap.geoObjects
+	      //   	.add(mapObjs['manufacturer']);
+
+    			// myMap.setBounds(myMap.geoObjects.getBounds(), {
+	      //           checkZoomRange: true // проверяем наличие тайлов на данном масштабе.
+	      //       });
+    			// myMap.setZoom(15);
+		        
+            }
+
+
     		if(typeof mapObjs['goal'] !== 'undefined') myMap.geoObjects.remove(mapObjs['goal']);
 
             mapObjs['goal'] = firstGeoObject;
-            roadWay();
+
+            if(!isAdmin) {
+	            roadWay();
+	        }
             /**
              * Все данные в виде javascript-объекта.
              */
@@ -455,6 +571,111 @@ function mapAutocomplete() {
         });
 
 	});
+}
+
+
+function newMapPoint(id, address) {
+	
+
+    // Поиск координат центра Нижнего Новгорода.
+    ymaps.geocode(address, {
+        /**
+         * Опции запроса
+         * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/geocode.xml
+         */
+        // boundedBy: myMap.getBounds(), // Сортировка результатов от центра окна карты
+        // strictBounds: true, // Вместе с опцией boundedBy будет искать строго внутри области, указанной в boundedBy
+        results: 1 // Если нужен только один результат, экономим трафик пользователей
+    }).then(function (res) {
+            // Выбираем первый результат геокодирования.
+            var firstGeoObject = res.geoObjects.get(0),
+                // Координаты геообъекта.
+                coords = firstGeoObject.geometry.getCoordinates(),
+                // Область видимости геообъекта.
+                bounds = firstGeoObject.properties.get('boundedBy');
+
+
+
+
+	         $(id).text(coords);
+
+             if(isAdmin) {
+
+	            
+	    			if(typeof mapObjs['manufacturer'] !== 'undefined') myMap.geoObjects.remove(mapObjs['manufacturer']);
+
+
+	            	mapObjs['manufacturer'] = new ymaps.Placemark(coords, {
+			            balloonContent: '<strong>'+$('#manuf_name').val()+'</strong>'
+			        }, {
+			            preset: 'islands#icon',
+			            iconColor: '#0095b6'
+			        });
+
+
+
+			    	myMap.geoObjects
+		        	.add(mapObjs['manufacturer']);
+
+	    			myMap.setBounds(bounds,{
+		                checkZoomRange: true // проверяем наличие тайлов на данном масштабе.
+		            });
+	    			myMap.setZoom(15);
+			} else {
+
+	            // Добавляем первый найденный геообъект на карту.
+	            myMap.geoObjects.add(firstGeoObject);
+	            // Масштабируем карту на область видимости геообъекта.
+	            myMap.setBounds(bounds, {
+	                checkZoomRange: true // проверяем наличие тайлов на данном масштабе.
+	            });
+	        }
+
+            /**
+             * Все данные в виде javascript-объекта.
+             */
+            console.log('Все данные геообъекта: ', firstGeoObject.properties.getAll());
+            /**
+             * Метаданные запроса и ответа геокодера.
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/GeocoderResponseMetaData.xml
+             */
+            console.log('Метаданные ответа геокодера: ', res.metaData);
+            /**
+             * Метаданные геокодера, возвращаемые для найденного объекта.
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/GeocoderMetaData.xml
+             */
+            console.log('Метаданные геокодера: ', firstGeoObject.properties.get('metaDataProperty.GeocoderMetaData'));
+            /**
+             * Точность ответа (precision) возвращается только для домов.
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/precision.xml
+             */
+            console.log('precision', firstGeoObject.properties.get('metaDataProperty.GeocoderMetaData.precision'));
+            /**
+             * Тип найденного объекта (kind).
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/kind.xml
+             */
+            console.log('Тип геообъекта: %s', firstGeoObject.properties.get('metaDataProperty.GeocoderMetaData.kind'));
+            console.log('Название объекта: %s', firstGeoObject.properties.get('name'));
+            console.log('Описание объекта: %s', firstGeoObject.properties.get('description'));
+            console.log('Полное описание объекта: %s', firstGeoObject.properties.get('text'));
+
+            /**
+             * Если нужно добавить по найденным геокодером координатам метку со своими стилями и контентом балуна, создаем новую метку по координатам найденной и добавляем ее на карту вместо найденной.
+             */
+            /**
+             var myPlacemark = new ymaps.Placemark(coords, {
+             iconContent: 'моя метка',
+             balloonContent: 'Содержимое балуна <strong>моей метки</strong>'
+             }, {
+             preset: 'islands#violetStretchyIcon'
+             });
+
+             myMap.geoObjects.add(myPlacemark);
+             */
+        });
+
+
+
 }
 
 
@@ -853,13 +1074,12 @@ function addCustomRow($table, n, names, buttons) {
 	var $tbody = $table.find('tbody');
 	var $tr = $('<tr>');
 	$tr.append('<td>');
-	debugger;
 
 	for(var i = 1; i <= n; i++) {
 		var $col = $('<td>');
 		$col.addClass('edited');
 
-		if(names.length > 0) $col.attr('name', names[i-1]);
+		if(names.length > 0 && typeof names[i-1] !== 'undefined') $col.attr('name', names[i-1]);
 		$tr.append($col);
 	}
 
@@ -867,4 +1087,13 @@ function addCustomRow($table, n, names, buttons) {
 	$tbody.append($tr);
 
 	return $tr;
+}
+
+function clearModal($modal) {
+	$modal.find('.modal-body').removeAttr('parent');
+	$modal.find('input[type=text]').val('');
+	$modal.find('.admin-coords').text('');
+
+	if(typeof mapObjs['manufacturer'] !== 'undefined') myMap.geoObjects.remove(mapObjs['manufacturer']);
+	if(typeof mapObjs['goal'] !== 'undefined') myMap.geoObjects.remove(mapObjs['goal']);
 }

@@ -242,6 +242,18 @@ input.incorrect {
 .tab-pane .sidebar {
 	overflow: hidden;
 }
+
+#for-admin-addmnanufacturer {
+	margin-bottom: 30px;
+}
+
+.onerow {
+	margin-bottom: 15px;
+}
+
+#ya_map.manufacturer-map {
+	margin-left: 15px;
+}
 /*select {
 	width: 250px;
 }
