@@ -13,6 +13,7 @@ var addTransportCols = ['',	'name','capacity','dimensions','pallets','rate','mca
 var btnsObj = $('<td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></td>');
 var isAdmin = false;
 var gluePrice = 240;
+var palletPrice = 150;
 
 
 var blockAdd ='\
@@ -670,6 +671,15 @@ $(function() {
 		$(document).on('tablechanged', '#order_detail, #order_detail_delivery', function(e) {
 			var tmpV = 0.00;
 
+			var $row = addTableRow($(this).find('table tbody'), 'pallets', 'Европоддоны', 'шт.', 'service-name', 'meters-row');
+			var numbers = countPallets();
+
+			$row.find('.material_number').text(numbers);
+			$row.find('.material_price').text(palletPrice);
+			$row.find('.material_comn_price').text(palletPrice*numbers);
+			
+
+
 			$(this).find('.numbers-row .material_comn_price').each(function(i, el){ 
 				var val = $(el).text();
 				if(val == '') val = 0;
@@ -703,6 +713,8 @@ $(function() {
 			$rows.find('.material_number').text(numbers);
 			$rows.find('.material_price').text(gluePrice);
 			$rows.find('.material_comn_price').text(gluePrice*numbers);
+
+			$rows.trigger('tablechanged');
 
 		});
 
@@ -1451,5 +1463,31 @@ function addTableRow($tbody, classname, name, type, after, hoveNoAfter) {
 }
 
 
-// Цена на клей: 240 руб. за 1 мешок
+function countPallets() {
+	var number = 0;
+
+	$('.added_block .number .pallet').each(function(i, el) {
+		number += getInpNumeric($(el).val(), 'int');
+	});
+
+	$('.added_mix .number .n').each(function(i, el) {
+		number += Math.ceil( getInpNumeric($(el).val(), 'float') / 50 );
+	});
+
+	return number;
+}
+
+function getInpNumeric(val, type) {
+	var res = 0;
+
+	if(typeof val !== null && val != '') {
+		if(type == 'int') {
+			res = Math.ceil(val);
+		} else if(type =='float') {
+			res = parseFloat(val);
+		}
+	}
+
+	return res;
+}
 // Цена за 1 поддон: 150 руб/шт
