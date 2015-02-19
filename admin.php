@@ -5,15 +5,22 @@
 	<title>Настройки</title>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
 
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
 
-	
+	<link rel="stylesheet" href="css/jquery-ui.min.css">
+	<!-- move css to css folder -->
+	<link rel="stylesheet" href="css/style.css">
+	<!-- Custom styles for admin template -->
+    <link href="css/dashboard.css" rel="stylesheet">	
 </head>
 <body>
 <?php
 include(__DIR__ . '/index.php');
 ?>
-
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
   <div class="container-fluid">
@@ -46,24 +53,13 @@ include(__DIR__ . '/index.php');
       <ul class="nav nav-sidebar">
         <li class="active"><a href="#tab-products">Продукция <span class="sr-only">(current)</span></a></li>
         <li><a href="#tab-manufacturers">Производители</a></li>
-        <!-- <li><a href="#">Analytics</a></li>
-        <li><a href="#">Export</a></li> -->
       </ul>
       <!-- <ul class="nav nav-sidebar">
         <li><a href="">Nav item</a></li>
-        <li><a href="">Nav item again</a></li>
-        <li><a href="">One more nav</a></li>
-        <li><a href="">Another nav item</a></li>
-        <li><a href="">More navigation</a></li>
-      </ul>
-      <ul class="nav nav-sidebar">
-        <li><a href="">Nav item again</a></li>
-        <li><a href="">One more nav</a></li>
-        <li><a href="">Another nav item</a></li>
       </ul> -->
     </div>
     
-    <div id="tab-products" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main  sub-tab">
+    <div id="tab-products" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main sub-tab">
       <h1 class="page-header">Продукты</h1>
 
       <?php $Manufacturer = new Manufacturer();
@@ -93,7 +89,7 @@ include(__DIR__ . '/index.php');
 
         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" manufacturerid="1"> <!-- manufacturer_id -->
         <?php 
-        $materials=$Calc->getMaterials(1); //  category_id
+        $materials=$Calc->getMaterials(1); // category_id
         $matIds = array_map('getIds', $materials);
 		$charactsRaw = $Calc->MaterialsCharct(implode($matIds, "','"), 1); //materials id`s, manufacturer_id
 		$characts = charactByPid($charactsRaw);
@@ -139,9 +135,9 @@ include(__DIR__ . '/index.php');
 		        	?>
 			          <?php $oneCounter = 1; 
 			          foreach($oneProdCharactsArr as $oneN => $oneProdCharacts) { 
-			          foreach($oneProdCharacts as  $oneProdCharact) { ?>
+			          foreach($oneProdCharacts as $oneProdCharact) { ?>
 			          <tr name="id<?php echo $oneProdCharact['id']; ?>">
-			          	<?php $sizes =  explode('x', $oneProdCharact['size']);
+			          	<?php $sizes = explode('x', $oneProdCharact['size']);
 			          	?>
 			              <td><?php echo $oneCounter++; ?></td>
 			              <td name="length"><?php echo $sizes[2]; ?></td>
@@ -159,7 +155,7 @@ include(__DIR__ . '/index.php');
 			           } ?>
       			<?php } ?>
 			          </tbody>
-			        </table>			       
+			        </table>
       			</div>
       			<div class="col-sm-2 col-md-2 col-md-offset-9 col-md-offset-9">
 			      	<button class="btn btn-success btn-xs for-admin-product"type="submit">
@@ -169,13 +165,13 @@ include(__DIR__ . '/index.php');
 		      </div>
 		    </div>
 		  </div>
-            <?php } ?>		  
+            <?php } ?>
 		</div>
 	</div>
 	<div id="tab-manufacturers" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main hide sub-tab">
       <h1 class="page-header">Производители</h1>
       <div>
-      	<button class="btn btn-success btn-xs  col-md-offset-1  col-sm-offset-1" id="for-admin-addmnanufacturer" type="submit"  data-toggle="modal" data-target="#myModal">
+      	<button class="btn btn-success btn-xs col-md-offset-1 col-sm-offset-1" id="for-admin-addmnanufacturer" type="submit" data-toggle="modal" data-target="#myModal">
       		<span>Добавить производителя</span>
       	</button>
       	<div class="manufacturers_list">
@@ -265,7 +261,7 @@ include(__DIR__ . '/index.php');
               	<span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span>
               </td>
 	           </tr>
-			<?php } ?>            
+			<?php } ?>
           </tbody>
         </table>
 
@@ -336,7 +332,7 @@ include(__DIR__ . '/index.php');
               <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
             </tr>
 
-          <?php } ?>          
+          <?php } ?>
           </tbody>
         </table>
         <div class="col-sm-2 col-md-2 col-md-offset-9 col-md-offset-9">
@@ -406,10 +402,10 @@ include(__DIR__ . '/index.php');
         	</div>
         	<div class="onerow col-lg-12 col-md-12 col-sm-12">
         		<div class="col-lg-3 col-md-3 col-sm-3">
-        			<span>Адрес:</span>        			
+        			<span>Адрес:</span>
         		</div>
         		<div class="col-lg-9 col-md-9 col-sm-9">
-        			<input type="text" class="col-lg-12 col-md-12 col-sm-12 admin-address" placeholder="Адрес доставки" id="deliv_address">  			
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12 admin-address" placeholder="Адрес доставки" id="deliv_address">
         		</div>
         	</div>
         	<div class="onerow col-lg-12 col-md-12 col-sm-12">
@@ -449,58 +445,58 @@ include(__DIR__ . '/index.php');
         	</div>
         	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="number_per_cubic_meter">
         		<div class="col-lg-5 col-md-5 col-sm-5">
-        			<span>Кол-во в 1 м<sup>3</sup>:</span>        			
+        			<span>Кол-во в 1 м<sup>3</sup>:</span>
         		</div>
         		<div class="col-lg-7 col-md-7 col-sm-7">
-        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">
         		</div>
         	</div>
         	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="weight">
         		<div class="col-lg-5 col-md-5 col-sm-5">
-        			<span>Вес блока:</span>        			
+        			<span>Вес блока:</span>
         		</div>
         		<div class="col-lg-7 col-md-7 col-sm-7">
-        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">
         		</div>
         	</div>
         	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="weight_pallet_and_block">
         		<div class="col-lg-5 col-md-5 col-sm-5">
-        			<span>Вес поддона с блоками:</span>        			
+        			<span>Вес поддона с блоками:</span>
         		</div>
         		<div class="col-lg-7 col-md-7 col-sm-7">
-        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">
         		</div>
         	</div>
         	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="strength_class">
         		<div class="col-lg-5 col-md-5 col-sm-5">
-        			<span>Класс прочности:</span>        			
+        			<span>Класс прочности:</span>
         		</div>
         		<div class="col-lg-7 col-md-7 col-sm-7">
-        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">
         		</div>
         	</div>
         	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="breaking_strength">
         		<div class="col-lg-5 col-md-5 col-sm-5">
-        			<span>Теплопроводность:</span>        			
+        			<span>Теплопроводность:</span>
         		</div>
         		<div class="col-lg-7 col-md-7 col-sm-7">
-        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">		
         		</div>
         	</div>
         	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="thermal_conductivity">
         		<div class="col-lg-5 col-md-5 col-sm-5">
-        			<span>Морозостойкость:</span>        			
+        			<span>Морозостойкость:</span>			
         		</div>
         		<div class="col-lg-7 col-md-7 col-sm-7">
-        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">		
         		</div>
         	</div>
         	<div class="onerow col-lg-12 col-md-12 col-sm-12" name="frost_resistance">
         		<div class="col-lg-5 col-md-5 col-sm-5">
-        			<span>Адрес:</span>        			
+        			<span>Адрес:</span>
         		</div>
         		<div class="col-lg-7 col-md-7 col-sm-7">
-        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">  			
+        			<input type="text" class="col-lg-12 col-md-12 col-sm-12">
         		</div>
         	</div>
         </div>
@@ -514,22 +510,10 @@ include(__DIR__ . '/index.php');
 </div><!-- /.modal -->
 
 
-	
+
 
 </body>
 </html>
-<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="css/bootstrap.min.css">
-
-	<!-- Optional theme -->
-	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
-
-	<link rel="stylesheet" href="css/jquery-ui.min.css">
-	<!-- move css to css folder -->
-	<link rel="stylesheet" href="css/style.css">
-	<!-- Custom styles for admin template -->
-    <link href="css/dashboard.css" rel="stylesheet">
-
 <script src="js/jquery-2.1.3.min.js"></script>
 
 	<!-- Latest compiled and minified JavaScript -->

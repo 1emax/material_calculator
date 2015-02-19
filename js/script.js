@@ -21,13 +21,12 @@ var blockAdd ='<tr class="numbers-row">\
 				<td>шт.</td>\
 				<td class="material_number"></td>\
 				<td class="material_price"></td>\
-				<td class="material_comn_price"></td>\
+				<td rowspan="2" class="material_comn_price"></td>\
 			</tr>\
 			<tr class="meters-row">\
 				<td>м<sup>3</sup></td>\
 				<td class="material_number"></td>\
 				<td class="material_price"></td>\
-				<td class="material_comn_price"></td>\
 			</tr>';
 
 // usage sample
@@ -127,7 +126,7 @@ $(function() {
 				}
 
 				$manufacturerEl.selectmenu('refresh').selectmenu('enable');
-
+				$('#add_mix').removeClass('hide');
 			}
 
 
@@ -189,22 +188,13 @@ $(function() {
 	$(document).on('click','#add_mix', function(e) {
 		if($('.form_cont.block').length >= 4) return;
 
-		$addMix.clone().appendTo($('#input_data .mixes')).find('select').selectmenu()
+		var $selects = $addMix.clone().appendTo($('#input_data .mixes')).find('select');
+		$selects.selectmenu()
       .selectmenu( "menuWidget" )
         .addClass( "overflow" );
+
+       $selects.selectmenu({change: changedMixUiSel});
 	});
-
-
-
-	$('#input_data .mixes select.product').selectmenu({change: function(e, ui) {
-		console.log(e, ui)
-	}});
-	$('#input_data .mixes select.prod_manufacturer').selectmenu({change: function(e, ui) {
-		console.log(e, ui)
-	}});
-	$('#input_data .mixes select.packing').selectmenu({change: function(e, ui) {
-		console.log(e, ui)
-	}});
 
 	if(enableCalc) showUnvisible();  
 
@@ -229,7 +219,7 @@ $(function() {
 	$('#navbar a').click(function (e) {
 	  e.preventDefault();
 
-	  $.cookie('curr-tab', $(this).attr('href'), { expires: 365, path: '/' });
+	  $.cookie('curr-tab', $(this).attr('href'), { expires: 365, path: window.location.pathname });
 
 	  $(this).tab('show');
 	})
@@ -240,7 +230,7 @@ $(function() {
 		if(typeof $.cookie('curr-tab') !== 'undefined') {
 			$('a[href='+$.cookie('curr-tab')+']').tab('show');
 		} else {
-			$.cookie('curr-tab', '#manufacturers', { expires: 365, path: '/' });
+			$.cookie('curr-tab', '#manufacturers', { expires: 365, path: window.location.pathname });
 		}
 	}
 
@@ -637,14 +627,17 @@ $(function() {
 			$forNumbers.find('.material_number').text(numbers);
 			var nPrice = Math.ceil(formData.price/formData.number_per_cubic_meter*100)/100;
 			$forNumbers.find('.material_price').text( nPrice );
-			$forNumbers.find('.material_comn_price').text(Math.ceil(numbers*nPrice*100)/100);
+
+
+			$forNumbers.find('.material_comn_price').text(Math.ceil(formData.price * meters*100)/100);
+
+			// $forNumbers.find('.material_comn_price').text(Math.ceil(numbers*nPrice*100)/100);
 
 
 
 			//meters row
 			$forMeteres.find('.material_number').text(meters);
 			$forMeteres.find('.material_price').text(formData.price);
-			$forMeteres.find('.material_comn_price').text(Math.ceil(formData.price * meters*100)/100);
 
 			$currentBlock.trigger('tablechanged');
 		});
@@ -1005,7 +998,7 @@ function createTableSize($parent, $arr) {
 
 	for(var i in $arr) {
 		var $el = $arr[i];
-		$parent.append('<tr><td>'+$el[localArr[0]]+'</td><td>'+$el[localArr[1]]+'</td></tr>');
+		$parent.append('<tr><td class="val" name="'+localArr[0]+'">'+$el[localArr[0]]+'</td><td class="val" name="'+localArr[1]+'">'+$el[localArr[1]]+'</td></tr>');
 		break;
 	}
 }
@@ -1094,7 +1087,7 @@ function bothSelected($el, size, density, $tableBody) {
 		var item = data[i];
 		if(item['size']==size && item['density']==density) {
 			createTableFull($tableBody, item);
-			$parent.parent().find('.number .n').val(1).trigger('change');
+			$parent.parent().find('.number .n').trigger('change');
 			return true;
 		}
 	}
@@ -1105,7 +1098,11 @@ function onNumberInInpCh() {
 		var $parent = $(this).parents('.number');
 		var $grandpa = $(this).parents('.form_cont');
 		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td.val').text();
+		perMeter = perMeter == '' ? $grandpa.find('tr td.val[name=number_per_cubic_meter]').text() : perMeter;
+
 		var perPallet = $grandpa.find('tr[name=number_per_pallet] td.val').text();
+		perPallet = perPallet == '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
+
 		var myVal = $(this).val();
 		changeInps($parent,'', perMeter, perPallet, myVal, $grandpa);
 	});
@@ -1113,7 +1110,11 @@ function onNumberInInpCh() {
 		var $parent = $(this).parents('.number');
 		var $grandpa = $(this).parents('.form_cont');
 		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td.val').text();
+		perMeter = perMeter == '' ? $grandpa.find('tr td.val[name=number_per_cubic_meter]').text() : perMeter;
+
 		var perPallet = $grandpa.find('tr[name=number_per_pallet] td.val').text();
+		perPallet = perPallet == '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
+
 		var myVal = $(this).val();
 		changeInps($parent,'number', perMeter, perPallet, myVal, $grandpa);
 	});
@@ -1121,14 +1122,20 @@ function onNumberInInpCh() {
 		var $parent = $(this).parents('.number');
 		var $grandpa = $(this).parents('.form_cont');
 		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td.val').text();
+		perMeter = perMeter == '' ? $grandpa.find('tr td.val[name=number_per_cubic_meter]').text() : perMeter;
+
 		var perPallet = $grandpa.find('tr[name=number_per_pallet] td.val').text();
+		perPallet = perPallet == '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
+
 		var myVal = $(this).val();
 		changeInps($parent,'pallet', perMeter, perPallet, myVal, $grandpa);
 	});
 }
 
 function changeInps($parent, iam,perMeter,perPallet, val, $grandpa) {
-	if($grandpa.find('select.size option:selected').hasClass('not_sel') || $grandpa.find('select.density option:selected').hasClass('not_sel')) return false;
+	if($grandpa.find('select.size option:selected').hasClass('not_sel') ) return false; // || $grandpa.find('select.density option:selected').hasClass('not_sel')
+	if(val == '' && perPallet == '' && perMeter == '') return;
+
 	if(isNaN(val) || val == '') val = 1;
 	if(isNaN(perPallet) || perPallet == '') perPallet = 1;
 	if(isNaN(perMeter) || perMeter == '') perMeter = 1;
@@ -1166,7 +1173,7 @@ function roadWay() {
 
     	custmRoutersHelper['route'] = route;
     	var routeLen = route.getLength();
-    	$('#route_length').text( (routeLen/100).toFixed(1) + ' км');
+    	$('#route_length').text( (routeLen/1000).toFixed(1) + ' км');
 
         myMap.geoObjects.add(route);
 
@@ -1341,3 +1348,25 @@ function clearModal($modal) {
 	if(typeof mapObjs['manufacturer'] !== 'undefined') myMap.geoObjects.remove(mapObjs['manufacturer']);
 	if(typeof mapObjs['goal'] !== 'undefined') myMap.geoObjects.remove(mapObjs['goal']);
 }
+
+function changedMixUiSel(e, ui) {
+	var $elem = $(ui.item.element);
+	if($elem.hasClass('not_sel')) return;
+
+	var $parent = $elem.parents('.form_cont');
+
+	var $tableBody = $parent.find('.characteristic_mix tbody');
+	$tableBody.removeClass('hide');
+
+	$parent.find('option.not_sel:selected').prop('selected',false).parent().find('option:not(.not_sel):first').prop('selected',true).parent().selectmenu('refresh');
+
+	var $parentBlock = $(this).parents('.added_mix');
+	var origHeight = $parentBlock.css('height', '').outerHeight();
+
+	var height = $parentBlock.siblings('.characteristic_mix').height();
+	if(origHeight < height) $parentBlock.css('height', height+15);
+}
+
+
+// Цена на клей: 240 руб. за 1 мешок
+// Цена за 1 поддон: 150 руб/шт
