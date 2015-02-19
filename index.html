@@ -5,7 +5,6 @@
 	<title>Расчет стоимости заказа</title>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
-	<script src="js/jquery-2.1.3.min.js"></script>
 
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="css/bootstrap.min.css">
@@ -13,15 +12,18 @@
 	<!-- Optional theme -->
 	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
 
-	<link rel="stylesheet" href="css/jquery-ui.css">
+	<link rel="stylesheet" href="css/jquery-ui.min.css">
 	<!-- move css to css folder -->
 	<link rel="stylesheet" href="css/style.css">
+
+	<script src="js/jquery-2.1.3.min.js"></script>
+
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="js/bootstrap.min.js"></script>
 
 
 	<script src="js/script.js"></script>
-	<script src="js/jquery-ui/jquery-ui.js"></script>
+	<script src="js/jquery-ui/jquery-ui.min.js"></script>
 	<script src="js/jquery.maskedinput.min.js"></script>
 	<script src="js/jquery-ui/datepicker-ru.js"></script>
 
@@ -37,8 +39,8 @@
 		<div class="input-big">
 			<div class="col-lg-10 col-md-10 col-sm-10">
 				<div id="radio" class="col-lg-5 col-md-6 col-sm-7 btn-group" data-toggle="buttons">
-				    <label class="btn btn-primary active"><input type="radio" tabindex="1" id="individual" name="individual" checked autocomplete="off">Физическое лицо</label>
-				    <label class="btn btn-primary"><input type="radio" tabindex="2" id="legal" name="legal" autocomplete="off">Юридическое лицо</label>
+				    <label class="btn btn-primary active"><input type="radio" tabindex="1" id="individual" name="individual" checked >Физическое лицо</label>
+				    <label class="btn btn-primary"><input type="radio" tabindex="2" id="legal" name="legal">Юридическое лицо</label>
 				</div>
 				<!-- <span class="col-lg-1 col-md-1 col-sm-1"></span> -->
 				<div class="input-group col-lg-4 col-md-4 col-sm-4">
@@ -227,12 +229,12 @@
 			<div class="col-lg-5 col-md-5 col-sm-5">
 				<select name="payment_type" id="payment_type">
 					<option class="not_sel">Форма оплаты</option>
-					<option id="non_cash_prepayment" name="non_cash_prepayment">Предоплата наличными</option>
-					<option id="cash_prepayment" name="cash_prepayment">Предоплата безналичными</option>
-					<option id="pay_on_object" name="pay_on_object">Оплата наличными на объекте</option>
+					<option id="non_cash_prepayment">Предоплата наличными</option>
+					<option id="cash_prepayment">Предоплата безналичными</option>
+					<option id="pay_on_object">Оплата наличными на объекте</option>
 				</select>
 			</div>
-			<div id="radio" class="col-lg-7 col-md-7 col-sm-7">
+			<div id="radio1" class="col-lg-7 col-md-7 col-sm-7">
 				<span class="col-lg-3 col-md-4 col-sm-5">Скидка на блоки </span>
 				<input type="text" class="col-lg-2 col-md-2 col-sm-2" name="block_discount" id="block_discount">
 				<span class="col-lg-1 col-md-1 col-sm-1"> руб.</span>
@@ -254,7 +256,16 @@
 						<th class="col-lg-2 col-md-2 col-sm-2">Общая стоимость</th>
 					</tr>
 				</thead>
-				<tbody>					
+				<tbody>
+					<tr class="hide">
+						<td colspan="1"></td>
+						<td colspan="1"></td>
+						<td colspan="1"></td>
+						<td colspan="1">мешок</td>
+						<td colspan="1" class="material_number"></td>
+						<td colspan="1" class="material_price"></td>
+						<td colspan="1" class="material_comn_price"></td>
+					</tr>
 					<tr class="numbers-row">
 						<td colspan="3" class="toleft"></td>
 						<td>мешок</td>
@@ -288,9 +299,9 @@
 				<div class="col-lg-4 col-md-4 col-sm-4">
 					<select name="delivery_type" id="delivery_type">
 						<option class="not_sel">Способ доставки</option>
-						<option id="pickup" name="pickup">Самовывоз</option>
-						<option id="unloading_delivery" name="unloading_delivery">Доставка с разгрузкой</option>
-						<option id="not_unloading_delivery" name="not_unloading_delivery">Доставка без разгрузки</option>
+						<option id="pickup">Самовывоз</option>
+						<option id="unloading_delivery">Доставка с разгрузкой</option>
+						<option id="not_unloading_delivery">Доставка без разгрузки</option>
 					</select>
 				</div>
 				<div class="col-lg-12 col-md-12 col-sm-12">
@@ -307,9 +318,9 @@
 					<div class="col-lg-4 col-md-4 col-sm-4">
 						<select name="moskow_way" id="moskow_way">
 							<option class="not_sel">Заезд в Москву</option>
-							<option id="inside_mcad" name="inside_mcad">Внутри МКАД</option>
-							<option id="inside_ttk" name="inside_ttk">Внутри ТТК</option>
-							<option id="inside_sad_kolco" name="inside_sad_kolco">Внутри Садового кольца</option>
+							<option id="inside_mcad">Внутри МКАД</option>
+							<option id="inside_ttk">Внутри ТТК</option>
+							<option id="inside_sad_kolco">Внутри Садового кольца</option>
 						</select>
 					</div>
 					<span id="route_length" class="col-lg-offset-4 col-md-offset-4 col-sm-offset-4 col-lg-3 col-md-3 col-sm-3"></span>
@@ -398,33 +409,42 @@
 				<thead>
 					<tr>
 						<th colspan="3" class="col-lg-4 col-md-4 col-sm-4">Продукция</th>
-						<th class="col-lg-2 col-md-2 col-sm-2">Ед. измерения</th>
-						<th class="col-lg-2 col-md-2 col-sm-2">Количество</th>
-						<th class="col-lg-2 col-md-2 col-sm-2">Цена</th>
-						<th class="col-lg-2 col-md-2 col-sm-2">Общая стоимость</th>
+						<th colspan="1" class="col-lg-2 col-md-2 col-sm-2">Ед. измерения</th>
+						<th colspan="1" class="col-lg-2 col-md-2 col-sm-2">Количество</th>
+						<th colspan="1" class="col-lg-2 col-md-2 col-sm-2">Цена</th>
+						<th colspan="1" class="col-lg-2 col-md-2 col-sm-2">Общая стоимость</th>
 					</tr>
 				</thead>
-				<tbody>					
-					<tr class="numbers-row">
-						<td colspan="3" class="toleft"></td>
-						<td>мешок</td>
-						<td class="material_number"></td>
-						<td class="material_price"></td>
-						<td class="material_comn_price"></td>
+				<tbody>
+					<tr class="hide">
+						<td colspan="1"></td>
+						<td colspan="1"></td>
+						<td colspan="1"></td>
+						<td colspan="1">мешок</td>
+						<td colspan="1" class="material_number"></td>
+						<td colspan="1" class="material_price"></td>
+						<td colspan="1" class="material_comn_price"></td>
 					</tr>
 					<tr class="numbers-row">
 						<td colspan="3" class="toleft"></td>
-						<td>шт.</td>
-						<td class="material_number"></td>
-						<td class="material_price"></td>
-						<td class="material_comn_price"></td>
+						<td colspan="1">мешок</td>
+						<td colspan="1" class="material_number"></td>
+						<td colspan="1" class="material_price"></td>
+						<td colspan="1" class="material_comn_price"></td>
+					</tr>
+					<tr class="numbers-row">
+						<td colspan="3" class="toleft"></td>
+						<td colspan="1">шт.</td>
+						<td colspan="1" class="material_number"></td>
+						<td colspan="1" class="material_price"></td>
+						<td colspan="1" class="material_comn_price"></td>
 					</tr>
 					<tr class="numbers-row">
 						<td colspan="3" class="toleft">Доставка</td>
-						<td>шт.</td>
-						<td class="material_number"></td>
-						<td class="material_price"></td>
-						<td class="material_comn_price"></td>
+						<td colspan="1">шт.</td>
+						<td colspan="1" class="material_number"></td>
+						<td colspan="1" class="material_price"></td>
+						<td colspan="1" class="material_comn_price"></td>
 					</tr>
 				</tbody>
 			</table>

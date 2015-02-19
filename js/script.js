@@ -212,7 +212,7 @@ $(function() {
 	$('select#delivery_type').selectmenu({change: function(e, ui) {
 		var $elem = $(ui.item.element);
 
-		if($elem.attr('name') == 'unloading_delivery' || $elem.attr('name') == 'not_unloading_delivery') {
+		if($elem.attr('id') == 'unloading_delivery' || $elem.attr('id') == 'not_unloading_delivery') {
 			$('.forpay').removeClass('unvisible');
 		} else {
 			$('.forpay').addClass('unvisible');
@@ -1148,7 +1148,7 @@ function changeInps($parent, iam,perMeter,perPallet, val, $grandpa) {
 		break;
 	}
 	$parent.trigger('blockchanged');
-	
+
 	return;
 }
 

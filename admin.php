@@ -5,33 +5,9 @@
 	<title>Настройки</title>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
-	<script src="js/jquery-2.1.3.min.js"></script>
 
-	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="css/bootstrap.min.css">
 
-	<!-- Optional theme -->
-	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
-
-	<link rel="stylesheet" href="css/jquery-ui.css">
-	<!-- move css to css folder -->
-	<link rel="stylesheet" href="css/style.css">
-	<!-- Custom styles for admin template -->
-    <link href="css/dashboard.css" rel="stylesheet">
-
-	<!-- Latest compiled and minified JavaScript -->
-	<script src="js/bootstrap.min.js"></script>
-
-	<script src="js/jquery.cookie.js"></script>
-	<script src="js/script.js"></script>
-	<script src="js/jquery-ui/jquery-ui.js"></script>
-	<script src="js/jquery.maskedinput.min.js"></script>
-	<script src="js/jquery-ui/datepicker-ru.js"></script>
-
-	<!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+	
 </head>
 <body>
 <?php
@@ -450,7 +426,6 @@ include(__DIR__ . '/index.php');
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script src="http://api-maps.yandex.ru/2.1/?lang=ru-RU" type="text/javascript"> </script>
 
 
 
@@ -539,10 +514,38 @@ include(__DIR__ . '/index.php');
 </div><!-- /.modal -->
 
 
-
+	
 
 </body>
 </html>
+<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
+	<link rel="stylesheet" href="css/jquery-ui.min.css">
+	<!-- move css to css folder -->
+	<link rel="stylesheet" href="css/style.css">
+	<!-- Custom styles for admin template -->
+    <link href="css/dashboard.css" rel="stylesheet">
+
+<script src="js/jquery-2.1.3.min.js"></script>
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="js/bootstrap.min.js"></script>
+
+	<script src="js/jquery.cookie.js"></script>
+	<script src="js/script.js"></script>
+	<script src="js/jquery-ui/jquery-ui.min.js"></script>
+	<script src="js/jquery.maskedinput.min.js"></script>
+	<script src="js/jquery-ui/datepicker-ru.js"></script>
+
+	<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<script src="http://api-maps.yandex.ru/2.1/?lang=ru-RU" type="text/javascript"> </script>
 
 <?php
 function getIds($val) {
