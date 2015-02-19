@@ -12,22 +12,32 @@ var trArrHelper = {"number_per_pallet":"шт",	"number_per_cubic_meter":"шт",	
 var addTransportCols = ['',	'name','capacity','dimensions','pallets','rate','mcad','inside_mcad','inside_ttk','inside_sad_kolco'];
 var btnsObj = $('<td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></td>');
 var isAdmin = false;
+var gluePrice = 240;
 
 
-var blockAdd ='<tr class="numbers-row">\
-				<td rowspan="2" class="rowspaned material-name"></td>\
-				<td rowspan="2" class="rowspaned material-size"></td>\
-				<td rowspan="2" class="rowspaned material-density"></td>\
-				<td>шт.</td>\
-				<td class="material_number"></td>\
-				<td class="material_price"></td>\
-				<td rowspan="2" class="material_comn_price"></td>\
-			</tr>\
-			<tr class="meters-row">\
-				<td>м<sup>3</sup></td>\
-				<td class="material_number"></td>\
-				<td class="material_price"></td>\
-			</tr>';
+var blockAdd ='\
+<tr class="numbers-row">\
+	<td rowspan="2" class="rowspaned material-name"></td>\
+	<td rowspan="2" class="rowspaned material-size"></td>\
+	<td rowspan="2" class="rowspaned material-density"></td>\
+	<td>шт.</td>\
+	<td class="material_number"></td>\
+	<td class="material_price"></td>\
+	<td rowspan="2" class="material_comn_price"></td>\
+</tr>\
+<tr class="meters-row">\
+	<td>м<sup>3</sup></td>\
+	<td class="material_number"></td>\
+	<td class="material_price"></td>\
+</tr>';
+var justTableRow = '\
+<tr class="numbers-row">\
+	<td colspan="3" class="service-name"></td>\
+	<td colspan="1" class="service-type"></td>\
+	<td colspan="1" class="material_number"></td>\
+	<td colspan="1" class="material_price"></td>\
+	<td colspan="1" class="material_comn_price"></td>\
+</tr>';
 
 // usage sample
 // addInpData(inputDataItems, 'blocks', {});
@@ -194,6 +204,12 @@ $(function() {
         .addClass( "overflow" );
 
        $selects.selectmenu({change: changedMixUiSel});
+
+       
+       var $nEl = $selects.parents('form').find('.number .n');
+	   $nEl.on('keypress keyup change', function() {
+			$(this).trigger('mixchanged');
+	   });
 	});
 
 	if(enableCalc) showUnvisible();  
@@ -664,6 +680,37 @@ $(function() {
 
 			$(this).find('.not_deliv_total_cost').text(tmpV +' руб.')
 		});
+
+		$(document).on('mixchanged', '.added_mix form', function(e) {
+			//need changes
+			var numbers = 0;
+
+			
+			$('.added_mix').each(function(i, el) {
+				var options = $(el).find('select option:selected:not(.not_sel)');
+				if(options.length != 3) return;
+
+				var tmpNumber = parseInt( $(el).find('.number .n').val() );
+				if(tmpNumber > 0) numbers += tmpNumber;
+			});
+
+
+			addTableRow($('#order_detail table tbody'), 'mixes', 'Клей для ячеистых бетонов', 'мешок', 'meters-row');
+			addTableRow($('#order_detail_delivery table tbody'), 'mixes', 'Клей для ячеистых бетонов', 'мешок', 'meters-row');
+
+			var $rows = $('table tbody .numbers-row.mixes');
+
+			$rows.find('.material_number').text(numbers);
+			$rows.find('.material_price').text(gluePrice);
+			$rows.find('.material_comn_price').text(gluePrice*numbers);
+
+		});
+
+		$(document).on('mixdeleted', '.added_mix form', function(e) {
+			$(this).find('.number .n').val('');
+			$(this).trigger('mixchanged');
+		});
+
 	}
 
 
@@ -912,8 +959,18 @@ function showUnvisible() {
 	$( "#date_of_prepayment, #delivery_date, #shipment_date" ).datepicker( $.datepicker.regional[ "ru" ] );
 
 	$(document).on('click', '.close', function(e) {
-		$(this).siblings('.added_block').find('form').trigger('blockdeleted');
+		// var delAfter = false;
+
+		if($(this).parent().hasClass('block')) {
+			$(this).siblings('.added_block').find('form').trigger('blockdeleted');
+		} else {
+			// if(delAfter) 
+			$(this).siblings('.added_mix').find('form').trigger('mixdeleted');
+			// delAfter = true;
+		}
+
 		$(this).parents('.form_cont').remove();
+
 	});
 
 	$('.unvisible:not(.forpay)').removeClass('unvisible');
@@ -1365,6 +1422,32 @@ function changedMixUiSel(e, ui) {
 
 	var height = $parentBlock.siblings('.characteristic_mix').height();
 	if(origHeight < height) $parentBlock.css('height', height+15);
+
+	var nVal = $parent.find('table .number .n').val();
+	if(nVal != '' && parseInt(nVal) > 0) $parent.find('form').trigger('mixchanged');
+	
+}
+
+function addTableRow($tbody, classname, name, type, after, hoveNoAfter) {
+	var $row = $tbody.find('.'+classname);
+
+	if($row.length == 0) {
+		$row = $(justTableRow).clone();
+		$row.addClass(classname);
+		$row.find('.service-name').text(name);
+		$row.find('.service-type').text(type);
+
+		if(after == 'end') {
+			$tbody.append($row);
+		} else if (typeof after !== "undefined" && $tbody.find('.'+after+':last').length == 1) {
+			$tbody.find('.'+after+':last').after($row);
+		} else if (typeof hoveNoAfter !== "undefined" && $tbody.find('.'+hoveNoAfter+':last').length == 1) {
+			$tbody.find('.'+hoveNoAfter+':last').after($row);			
+		} else {
+			$tbody.prepend($row);
+		}
+	}
+	return $row;
 }
 
 
