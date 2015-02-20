@@ -653,7 +653,7 @@ $(function() {
 
 
 			//meters row
-			$forMeteres.find('.material_number').text(meters);
+			$forMeteres.find('.material_number').attr('name', formData.density).text(meters);
 			$forMeteres.find('.material_price').text(formData.price);
 
 			$currentBlock.trigger('tablechanged');
@@ -671,7 +671,7 @@ $(function() {
 		$(document).on('tablechanged', '#order_detail, #order_detail_delivery', function(e) {
 			var tmpV = 0.00;
 
-			var $row = addTableRow($(this).find('table tbody'), 'pallets', 'Европоддоны', 'шт.', 'service-name', 'meters-row');
+			var $row = addTableRow($(this).find('table tbody'), 'pallets', 'Европоддоны', 'шт.', 'mixes', 'meters-row');
 			var numbers = countPallets();
 
 			$row.find('.material_number').text(numbers);
@@ -721,6 +721,43 @@ $(function() {
 		$(document).on('mixdeleted', '.added_mix form', function(e) {
 			$(this).find('.number .n').val('');
 			$(this).trigger('mixchanged');
+		});
+
+		$(document).on('changesfortransport', 'div#transport', function(e) {
+			var roadData = $('#km2mcad').val();
+			var palletsData = Math.ceil($('#order_detail tbody .pallets .material_number').text());
+			var gluesData = Math.ceil($('#order_detail tbody .mixes .material_number').text());
+
+			var cubicMeters = 0.0;
+
+			$('#order_detail .meters-row .material_number').each(function(i, el) {
+				cubicMeters += getInpNumeric($(el).text(), 'float') * (Math.ceil($(this).attr('name'))+50);
+			});
+
+			cubicMeters += gluesData * 25;
+			cubicMeters += palletsData * 20;
+
+			debugger;
+
+			var cubicMetersWeightData = cubicMeters;
+
+
+			$.post('calc_win_transports.php', {road:roadData,pallets:palletsData,cubicMetersWeight:cubicMetersWeightData}, function(data) {
+				if(typeof data == 'object') {
+					var unique = {};
+
+					for(var i in data) {
+						var uniqEl = data[i];
+						unique[uniqEl] = uniqEl;
+					}
+						$.post('ajax.php?getFew', {ids:unique, table:'transport'}, function(transportObjects) {
+							console.log(transportObjects);
+						});
+
+				} else {
+					console.log(data);
+				}
+			}, 'json');
 		});
 
 	}

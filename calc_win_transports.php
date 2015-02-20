@@ -5,6 +5,12 @@ $road = 1000;
 $pallets = 9; // max - 500 pallets
 $cubicMetersWeight = 80007; // max - 220 000 m3
 
+if(isset($_POST['road']) && isset($_POST['pallets']) && isset($_POST['cubicMetersWeight'])) {
+	$road = intval($_POST['road']);
+	$pallets = intval($_POST['pallets']); // max - 500 pallets
+	$cubicMetersWeight = intval($_POST['cubicMetersWeight']); // max - 220 000 m3
+}
+
 $Transport = new Transport();
 $transports = $Transport->getAll(array('id', 'capacity', 'pallets','rate', 'mcad'));
 

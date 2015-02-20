@@ -51,6 +51,16 @@ class Calc {
 		return $db->get();		
 	}
 
+	public function getFew($table, $ids, $colums) {
+		$db = $this->db;
+		$colsStr = is_array($colums)? implode(',', $colums) : $colums;
+		$db->select($colsStr);
+		$db->table($table);
+		$db->where("id IN ('".implode("','", $ids) ."')");
+
+		return $db->get();	
+	}
+
 	public function getCategories() {
 		$db = $this->db;
 

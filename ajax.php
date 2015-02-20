@@ -125,6 +125,10 @@ if (isset($G['getItems'])) {
 	$result=$Calc->change($table,$id, $P['data']);
 
 	// echo json_encode($result[0]);
+} elseif (isset($G['getFew'])) {
+	if(!isset($P['colums']) || $P['colums'] == '') $P['colums'] = '*';
+
+	echo json_encode( $Calc->getFew($P['table'], $P['ids'], $P['colums']) );
 }
 
 
