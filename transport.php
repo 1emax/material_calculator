@@ -36,9 +36,9 @@ class Transport {
 
 	}
 
-	public function getAll() {
+	public function getAll($cols = '*') {
 		$db = $this->db;
-		$db->select('*');	
+		$db->select($cols);	
 		$db->table('transport');
 		return $db->get();
 	}
