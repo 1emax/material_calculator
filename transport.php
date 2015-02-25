@@ -42,6 +42,10 @@ class Transport {
 		$db->table('transport');
 		return $db->get();
 	}
+
+	public function closeConnection() {
+		$this->db->close();
+	}
 }
 
 

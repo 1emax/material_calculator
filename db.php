@@ -11,7 +11,13 @@ class DB {
 
 	public function __construct() {
 		$dsn = 'mysql:dbname=' . $this->name . ';host='.$this->host. ';charset=utf8';
-		$this->PDO = new PDO($dsn, $this->user, $this->password);
+
+		try {
+			$this->PDO = new PDO($dsn, $this->user, $this->password);
+		} catch (PDOException $e) {
+		    print "Error!: " . iconv("windows-1251", "UTF-8", $e->getMessage()) . "<br/>";//$e->getMessage()
+		    die();
+		}
 	}
 
 	public function select($elems = '') {
@@ -73,6 +79,10 @@ class DB {
 
 	public function concatStr() {
 
+	}
+
+	public function close() {
+		$this->PDO = null;
 	}
 }
 

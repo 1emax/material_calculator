@@ -13,6 +13,8 @@ if(isset($_POST['road']) && isset($_POST['pallets']) && isset($_POST['cubicMeter
 
 $Transport = new Transport();
 $transports = $Transport->getAll(array('id', 'capacity', 'pallets','rate', 'mcad'));
+$Transport->closeConnection();
+unset($Transport);
 
 // print_r($transports);
 

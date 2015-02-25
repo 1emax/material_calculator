@@ -3,6 +3,7 @@ var debugMessage = '';
 var enableCalc = true;
 var mapObjs = {};
 var custmRoutersHelper = {};
+var tempContainer = {};
 
 var $addBlock = {};
 var $addMix = {};
@@ -14,6 +15,8 @@ var btnsObj = $('<td><span class="glyphicon glyphicon-pencil" aria-hidden="true"
 var isAdmin = false;
 var gluePrice = 240;
 var palletPrice = 150;
+var lastTime = new Date().getTime();
+var eventsTimeouts = {};
 
 
 var blockAdd ='\
@@ -208,8 +211,17 @@ $(function() {
 
        
        var $nEl = $selects.parents('form').find('.number .n');
+
 	   $nEl.on('keypress keyup change', function() {
-			$(this).trigger('mixchanged');
+
+	   			(function(self) {
+	   				if($(self).attr('oldval') == $(self).val()) {
+	   				return false;
+	   			}
+	   				$(self).attr('oldval', $(self).val());
+					startEventAfter(function(){$(self).trigger('mixchanged');}, 'mixchanged', 250);
+	   			} (this));
+
 	   });
 	});
 
@@ -225,7 +237,7 @@ $(function() {
 			$('.forpay').addClass('unvisible');
 		}
 
-		console.log(e, ui)
+		// console.log(e, ui)
 		 
 	}});
 
@@ -672,7 +684,7 @@ $(function() {
 			var tmpV = 0.00;
 
 			var $row = addTableRow($(this).find('table tbody'), 'pallets', 'Европоддоны', 'шт.', 'mixes', 'meters-row');
-			var numbers = countPallets();
+			var numbers = countPallets(this);
 
 			$row.find('.material_number').text(numbers);
 			$row.find('.material_price').text(palletPrice);
@@ -688,22 +700,28 @@ $(function() {
 
 			tmpV = (Math.ceil(tmpV*100)/100).toString().replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
 
-			$(this).find('.not_deliv_total_cost').text(tmpV +' руб.')
+			$(this).find('.not_deliv_total_cost').text(tmpV +' руб.');
+
+			$('#transport').trigger('changesfortransport');
 		});
 
 		$(document).on('mixchanged', '.added_mix form', function(e) {
 			//need changes
 			var numbers = 0;
 
+			var breakIt = false;
 			
 			$('.added_mix').each(function(i, el) {
 				var options = $(el).find('select option:selected:not(.not_sel)');
-				if(options.length != 3) return;
+				if(options.length != 3) {
+					breakIt = true;
+					return;
+				}
 
 				var tmpNumber = parseInt( $(el).find('.number .n').val() );
 				if(tmpNumber > 0) numbers += tmpNumber;
 			});
-
+			if(breakIt) return;
 
 			addTableRow($('#order_detail table tbody'), 'mixes', 'Клей для ячеистых бетонов', 'мешок', 'meters-row');
 			addTableRow($('#order_detail_delivery table tbody'), 'mixes', 'Клей для ячеистых бетонов', 'мешок', 'meters-row');
@@ -737,12 +755,25 @@ $(function() {
 			cubicMeters += gluesData * 25;
 			cubicMeters += palletsData * 20;
 
-			debugger;
+			// debugger;
 
 			var cubicMetersWeightData = cubicMeters;
 
+			var uniqVal = '' +  roadData.toString()+ palletsData.toString()+ cubicMetersWeightData.toString();
 
-			$.post('calc_win_transports.php', {road:roadData,pallets:palletsData,cubicMetersWeight:cubicMetersWeightData}, function(data) {
+			if($(self).attr('oldval') == uniqVal) {
+				return false;
+			} 
+
+			console.log('transport calc changed', $(self).attr('oldval'), uniqVal);
+			$(self).attr('oldval', uniqVal);
+
+			if(typeof tempContainer['calc'] == "object") tempContainer['calc'].abort();
+			if(typeof tempContainer['result'] == "object") tempContainer['result'].abort();
+
+
+			tempContainer['calc'] = $.post('calc_win_transports.php', {road:roadData,pallets:palletsData,cubicMetersWeight:cubicMetersWeightData}, function(data) {
+
 				if(typeof data == 'object') {
 					var unique = {};
 
@@ -750,14 +781,44 @@ $(function() {
 						var uniqEl = data[i];
 						unique[uniqEl] = uniqEl;
 					}
-						$.post('ajax.php?getFew', {ids:unique, table:'transport'}, function(transportObjects) {
-							console.log(transportObjects);
-						});
+
+					if(typeof tempContainer['result'] == "object") tempContainer['result'].abort();
+
+					tempContainer['result'] = $.post('ajax.php?getFew', {ids:unique, table:'transport'}, function(transportObjects) {
+						if(typeof transportObjects != 'object') console.log(transportObjects);
+						var unique = {};
+						transportObjects = changeKey(transportObjects, 'id');
+
+						for(var i in data) {
+							var uniqEl = data[i];
+							if(unique.hasOwnProperty(uniqEl)) unique[uniqEl]++;
+							else unique[uniqEl] = 1;
+						}
+
+						for(var id in unique) {
+							var number = unique[id];
+							var transportObject = transportObjects[id];
+							transportObject.number = parseInt(number);
+							transportObject.oneprice = parseInt(transportObject.rate) + Math.ceil(roadData)*parseInt(transportObject.mcad);
+							transportObject.comnprice = transportObject.number *transportObject.oneprice;
+
+							addTransportRow(transportObject);
+						}
+
+						console.log(unique);
+						console.log(transportObjects);
+					}, 'json')
+					.always(function() {
+						delete tempContainer['result'];
+					});
 
 				} else {
 					console.log(data);
 				}
-			}, 'json');
+			}, 'json')
+			.always(function() {
+				delete tempContainer['calc'];
+			});
 		});
 
 	}
@@ -1050,7 +1111,7 @@ function addInpData(obj, itemName, val) {
 }
 
 function changeKey(obj, id) {
-	var result = [];
+	var result = {};
 
 	for(var i in obj) {
 		var el = obj[i];
@@ -1210,7 +1271,9 @@ function onNumberInInpCh() {
 		perPallet = perPallet == '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
 
 		var myVal = $(this).val();
-		changeInps($parent,'', perMeter, perPallet, myVal, $grandpa);
+	   			
+
+		changeInps($parent,'', perMeter, perPallet, myVal, $grandpa, this);
 	});
 	$(document).on('keypress keyup change','.added_block .number .n', function(e) {
 		var $parent = $(this).parents('.number');
@@ -1222,7 +1285,7 @@ function onNumberInInpCh() {
 		perPallet = perPallet == '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
 
 		var myVal = $(this).val();
-		changeInps($parent,'number', perMeter, perPallet, myVal, $grandpa);
+		changeInps($parent,'number', perMeter, perPallet, myVal, $grandpa, this);
 	});
 	$(document).on('keypress keyup change','.added_block .number .pallet', function(e) {
 		var $parent = $(this).parents('.number');
@@ -1234,12 +1297,22 @@ function onNumberInInpCh() {
 		perPallet = perPallet == '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
 
 		var myVal = $(this).val();
-		changeInps($parent,'pallet', perMeter, perPallet, myVal, $grandpa);
+		changeInps($parent,'pallet', perMeter, perPallet, myVal, $grandpa, this);
 	});
 }
 
-function changeInps($parent, iam,perMeter,perPallet, val, $grandpa) {
+function changeInps($parent, iam,perMeter,perPallet, val, $grandpa, self) {
 	if($grandpa.find('select.size option:selected').hasClass('not_sel') ) return false; // || $grandpa.find('select.density option:selected').hasClass('not_sel')
+
+	///////////////////
+	if($(self).attr('oldval') == $(self).val()) {
+		return false;
+	} 
+
+	$(self).attr('oldval', $(self).val());
+	console.log('changed', $(self).attr('oldval'),$(self).val())
+	//////////////
+
 	if(val == '' && perPallet == '' && perMeter == '') return;
 
 	if(isNaN(val) || val == '') val = 1;
@@ -1472,7 +1545,7 @@ function changedMixUiSel(e, ui) {
 	var height = $parentBlock.siblings('.characteristic_mix').height();
 	if(origHeight < height) $parentBlock.css('height', height+15);
 
-	var nVal = $parent.find('table .number .n').val();
+	var nVal = $parent.find('form .number .n').val();
 	if(nVal != '' && parseInt(nVal) > 0) $parent.find('form').trigger('mixchanged');
 	
 }
@@ -1500,15 +1573,15 @@ function addTableRow($tbody, classname, name, type, after, hoveNoAfter) {
 }
 
 
-function countPallets() {
+function countPallets(self) {
 	var number = 0;
 
 	$('.added_block .number .pallet').each(function(i, el) {
 		number += getInpNumeric($(el).val(), 'int');
 	});
 
-	$('.added_mix .number .n').each(function(i, el) {
-		number += Math.ceil( getInpNumeric($(el).val(), 'float') / 50 );
+	$(self).find('tr.mixes .material_number').each(function(i, el) {
+		number += Math.ceil( getInpNumeric($(el).text(), 'float') / 50 );
 	});
 
 	return number;
@@ -1527,4 +1600,35 @@ function getInpNumeric(val, type) {
 
 	return res;
 }
-// Цена за 1 поддон: 150 руб/шт
+
+function addTransportRow(transport) {
+	var $table = $('table#transportation');
+
+	if($table.find('[name=transport' + transport['id'] + ']').length > 0) {
+		var $row = $table.find('[name=transport' + transport['id'] + ']');
+	} else {
+		var $row = addCustomRow($table, 6, ['capacity','dimensions','pallets','number','oneprice','comnprice']);
+		$row.find('td:first').attr('name', 'name');
+		$row.attr('name','transport' + transport['id']);
+		$row.find('.edited').removeClass('edited');
+	}
+
+	$row.find('td[name=name]').text(transport['name']);
+	$row.find('td[name=capacity]').text(transport['capacity']);
+	$row.find('td[name=dimensions]').text(transport['dimensions']);
+	$row.find('td[name=pallets]').text(transport['pallets']);
+	$row.find('td[name=number]').text(transport['number']);
+	$row.find('td[name=oneprice]').text(transport['oneprice']);
+	$row.find('td[name=comnprice]').text(transport['comnprice']);
+
+	return $row;
+}
+
+function startEventAfter(funct, eventName, inerv) {
+	if(typeof eventsTimeouts['eventName'] !== 'undefined') clearTimeout(eventsTimeouts['eventName']);
+
+	eventsTimeouts['eventName'] = setTimeout(function(){
+		funct();
+		delete eventsTimeouts['eventName'];
+	}, inerv);
+}
