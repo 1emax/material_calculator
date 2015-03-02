@@ -1,9 +1,10 @@
 "use strict";
 var debugMessage = '';
-var enableCalc = true;
+var enableCalc = false;
 var mapObjs = {};
 var custmRoutersHelper = {};
-var tempContainer = {};
+var tempRequestContainer = {};
+var transpRequestStack = {};
 
 var $addBlock = {};
 var $addMix = {};
@@ -17,6 +18,7 @@ var gluePrice = 240;
 var palletPrice = 150;
 var lastTime = new Date().getTime();
 var eventsTimeouts = {};
+var vehiclesWithUnloadPrice = 2000;
 
 
 var blockAdd ='\
@@ -233,6 +235,9 @@ $(function() {
 
 		if($elem.attr('id') == 'unloading_delivery' || $elem.attr('id') == 'not_unloading_delivery') {
 			$('.forpay').removeClass('unvisible');
+			$('#order_detail_delivery').trigger('tablechanged');
+			$('#transport').trigger('changesfortransport');
+
 		} else {
 			$('.forpay').addClass('unvisible');
 		}
@@ -616,15 +621,47 @@ $(function() {
 	});
 
 	if(!isAdmin) {
+		$('#block_discount').on('keypress keyup change', function() {
+
+   			(function(self) {
+   				if($(self).attr('oldval') == $(self).val()) {
+   				return false;
+   			}
+   				$(self).attr('oldval', $(self).val());
+				startEventAfter(function(){
+
+					var discount = Math.ceil($(self).val().replace(/[^\/\d]/g,''));
+					// $(self).trigger('discountchanged');
+					$('#order_detail, #order_detail_delivery').each(function(i, el) {
+						var $tableEl = $(el);
+
+						$tableEl.find('.meters-row').each(function(subI, subEl) {
+							var id = $(subEl).attr('name');
+							var $onePriceRow = $(subEl).find('.material_price');
+							var blockData = $onePriceRow.data('el');
+							$onePriceRow.text(blockData.price - discount);
+							$tableEl.find('.numbers-row[name=' + id + '] .material_comn_price').text(Math.ceil( (blockData.price-discount) * blockData.meters*100)/100);
+						});
+					});
+					
+					// .data('el', {"price":formData.price, "meters":meters})
+					$('#order_detail, #order_detail_delivery').trigger('tablechanged');
+					console.log($(self).val());
+				}, 'discountchanged', 250);
+   			} (this));
+
+	   });
 		$(document).on('blockchanged', '.added_block form', function(e) {
 			var $form = $(this);
 			var formData = $form.data('el');
 			var options = $form.find('select option:selected:not(.not_sel)');
 			if(options.length != 2) return;
 
-			var meters = $form.find('.number .m3').val();
-			var numbers = $form.find('.number .n').val();
+			var meters = parseFloat($form.find('.number .m3').val()).toFixed(2);
+			var numbers = Math.ceil( $form.find('.number .n').val());
 			var stackNumber = $form.attr('name');
+			var discount = Math.ceil($('#block_discount').val().replace(/[^\/\d]/g,''));
+
 
 			var $currentBlock = $('.meters-row[name='+stackNumber+'],.numbers-row[name='+stackNumber+']');
 
@@ -654,11 +691,11 @@ $(function() {
 
 
 			$forNumbers.find('.material_number').text(numbers);
-			var nPrice = Math.ceil(formData.price/formData.number_per_cubic_meter*100)/100;
+			var nPrice = Math.ceil( (formData.price)/formData.number_per_cubic_meter*100)/100;
 			$forNumbers.find('.material_price').text( nPrice );
 
 
-			$forNumbers.find('.material_comn_price').text(Math.ceil(formData.price * meters*100)/100);
+			$forNumbers.find('.material_comn_price').text(Math.ceil( (formData.price-discount) * meters*100)/100);
 
 			// $forNumbers.find('.material_comn_price').text(Math.ceil(numbers*nPrice*100)/100);
 
@@ -666,7 +703,7 @@ $(function() {
 
 			//meters row
 			$forMeteres.find('.material_number').attr('name', formData.density).text(meters);
-			$forMeteres.find('.material_price').text(formData.price);
+			$forMeteres.find('.material_price').data('el', {"price":Math.ceil(formData.price), "meters":meters}).text(formData.price - discount);
 
 			$currentBlock.trigger('tablechanged');
 		});
@@ -681,6 +718,11 @@ $(function() {
 		});
 
 		$(document).on('tablechanged', '#order_detail, #order_detail_delivery', function(e) {
+			if($(this).attr('id') == "order_detail_delivery") {
+				var delivType = $('select#delivery_type option:selected').attr('id');
+				if(delivType != "unloading_delivery" && delivType != "not_unloading_delivery") return;
+			}
+
 			var tmpV = 0.00;
 
 			var $row = addTableRow($(this).find('table tbody'), 'pallets', 'Европоддоны', 'шт.', 'mixes', 'meters-row');
@@ -702,7 +744,12 @@ $(function() {
 
 			$(this).find('.not_deliv_total_cost').text(tmpV +' руб.');
 
-			$('#transport').trigger('changesfortransport');
+			if($(this).attr('id') == "order_detail") {
+				var delivType = $('select#delivery_type option:selected').attr('id');
+				if(delivType != "unloading_delivery" && delivType != "not_unloading_delivery") return;
+
+				$('#transport').trigger('changesfortransport');
+			}
 		});
 
 		$(document).on('mixchanged', '.added_mix form', function(e) {
@@ -742,9 +789,12 @@ $(function() {
 		});
 
 		$(document).on('changesfortransport', 'div#transport', function(e) {
-			var roadData = $('#km2mcad').val();
+			var roadData = Math.ceil( $('#km2mcad').val() );
 			var palletsData = Math.ceil($('#order_detail tbody .pallets .material_number').text());
 			var gluesData = Math.ceil($('#order_detail tbody .mixes .material_number').text());
+			var delivType = $('#delivery_type option:selected').attr('id');
+
+			if(delivType != 'unloading_delivery' && delivType != 'not_unloading_delivery') return;
 
 			var cubicMeters = 0.0;
 
@@ -759,7 +809,17 @@ $(function() {
 
 			var cubicMetersWeightData = cubicMeters;
 
+			if(roadData == 0 || cubicMetersWeightData == 0 || palletsData == 0) return;
+
 			var uniqVal = '' +  roadData.toString()+ palletsData.toString()+ cubicMetersWeightData.toString();
+
+			if(delivType == 'unloading_delivery') {
+				$('#unloading').parent().removeClass('unvisible');
+				$('#unloading').trigger('with_unload');
+			} else {
+				$('#unloading').parent().addClass('unvisible');
+				recalcTransportWithoutUnload();
+			}
 
 			if($(self).attr('oldval') == uniqVal) {
 				return false;
@@ -767,12 +827,13 @@ $(function() {
 
 			console.log('transport calc changed', $(self).attr('oldval'), uniqVal);
 			$(self).attr('oldval', uniqVal);
+			var allTransportPrices = 0;
 
-			if(typeof tempContainer['calc'] == "object") tempContainer['calc'].abort();
-			if(typeof tempContainer['result'] == "object") tempContainer['result'].abort();
+			if(typeof tempRequestContainer['calc'] == "object") tempRequestContainer['calc'].abort();
+			if(typeof tempRequestContainer['result'] == "object") tempRequestContainer['result'].abort();
 
 
-			tempContainer['calc'] = $.post('calc_win_transports.php', {road:roadData,pallets:palletsData,cubicMetersWeight:cubicMetersWeightData}, function(data) {
+			tempRequestContainer['calc'] = $.post('calc_win_transports.php', {road:roadData,pallets:palletsData,cubicMetersWeight:cubicMetersWeightData}, function(data) {
 
 				if(typeof data == 'object') {
 					var unique = {};
@@ -782,15 +843,17 @@ $(function() {
 						unique[uniqEl] = uniqEl;
 					}
 
-					if(typeof tempContainer['result'] == "object") tempContainer['result'].abort();
+					if(typeof tempRequestContainer['result'] == "object") tempRequestContainer['result'].abort();
 
-					tempContainer['result'] = $.post('ajax.php?getFew', {ids:unique, table:'transport'}, function(transportObjects) {
+					tempRequestContainer['result'] = $.post('ajax.php?getFew', {ids:unique, table:'transport'}, function(transportObjects) {
 						if(typeof transportObjects != 'object') console.log(transportObjects);
 						var unique = {};
+						var allTransportNumber = 0;
 						transportObjects = changeKey(transportObjects, 'id');
 
 						for(var i in data) {
 							var uniqEl = data[i];
+							allTransportNumber++;
 							if(unique.hasOwnProperty(uniqEl)) unique[uniqEl]++;
 							else unique[uniqEl] = 1;
 						}
@@ -801,15 +864,27 @@ $(function() {
 							transportObject.number = parseInt(number);
 							transportObject.oneprice = parseInt(transportObject.rate) + Math.ceil(roadData)*parseInt(transportObject.mcad);
 							transportObject.comnprice = transportObject.number *transportObject.oneprice;
+							allTransportPrices += transportObject.comnprice;
 
 							addTransportRow(transportObject);
+						}
+
+						$('#transportcomnprice').text(allTransportPrices);
+						$('#order_detail_delivery table tr.delivery .material_comn_price').text(allTransportPrices);
+						$('#order_detail_delivery table tr.delivery .material_number').text(allTransportNumber);
+
+
+						if(delivType == 'unloading_delivery') {
+							$('#unloading').trigger('with_unload');
+						} else {
+							$('#order_detail_delivery').trigger('tablechanged');
 						}
 
 						console.log(unique);
 						console.log(transportObjects);
 					}, 'json')
 					.always(function() {
-						delete tempContainer['result'];
+						delete tempRequestContainer['result'];
 					});
 
 				} else {
@@ -817,10 +892,102 @@ $(function() {
 				}
 			}, 'json')
 			.always(function() {
-				delete tempContainer['calc'];
+				delete tempRequestContainer['calc'];
 			});
 		});
 
+		$(document).on('with_unload','#unloading', function(e) {
+			var vehiclesWithUnload = 0;
+			var vehPrices = 0;
+
+			$('#transportation tr[name]').each(function(i, el) {
+				if($(el).find('td[name=name]').text().toLowerCase() == 'бортовой автомобиль') {
+					vehiclesWithUnload += Math.ceil( $(el).find('td[name=number]').text() );
+					vehPrices += Math.ceil( $(el).find('td[name=comnprice]').text() );
+				}
+			});
+
+
+			$(this).find('td[name=amount_of_work]').text(vehiclesWithUnload);
+			$(this).find('td[name=price]').text(vehiclesWithUnload);
+			$(this).find('td[name=comnprice]').text(vehiclesWithUnload*vehiclesWithUnloadPrice);
+			var commonPrice = vehPrices + vehiclesWithUnload*vehiclesWithUnloadPrice;
+			$('#transportcomnprice').text(commonPrice);
+			$('#order_detail_delivery table tr.delivery .material_comn_price').text(commonPrice);
+			$('#order_detail_delivery').trigger('tablechanged');
+		});
+
+		$('#checkout').on('click', function(e){
+			e.preventDefault();
+
+			if (confirm('Оформить?') !== true) {
+				return false;
+			}
+
+			var formData = {};
+			formData.manager_name = $('#manager_name').val();
+			formData.pay_deliv_pickup = $('#date_of_prepayment').val() +'/'+ $('#delivery_date').val() +'/'+ $('#shipment_date').val();
+			formData.l_n_p = $('#last_name').val() + ' ' + $('#user_name').val() + ' ' + $('#patronymic').val();
+			formData.phone_number = $('#phone_number').val();
+			formData.email = $('#email').val();
+
+			formData.payment_type = $('#payment_type option:selected').text(); //if .not_sel - do not send
+			formData.delivery_type = $('#delivery_type option:selected').text(); //if .not_sel - do not send
+			formData.highway = $('#highway').val();
+			formData.km2mcad = $('#km2mcad').val();
+			formData.deliv_address = $('#deliv_address').val();
+
+			if(!$('#company_name').hasClass('hide')) {
+				formData.company_name = $('#company_name').val();
+			}
+
+			formData.moskow_way = $('#moskow_way option:selected:not(.not_sel)').val();
+			formData.comment = $('#comment').val();
+
+			var $table = '';
+
+			if($('#order_detail_delivery').hasClass('unvisible')){
+				$table = $('#order_detail').clone();
+			} else {
+				$table = $('#order_detail_delivery').clone();
+			}
+
+			$table.find('.hide').remove();
+
+			formData.table = $table.html();
+
+			$.post('sendemail.php',formData, function (data){
+				console.log(data);
+			});
+
+		});
+
+		$('#clear_order').on('click', function(e) {
+			e.preventDefault();
+			if (confirm('Очистить форму заказа?') !== true) {
+				return false;
+			}
+
+			window.location.reload();
+		});
+
+		$('#clear_material_order').on('click', function(e) {
+			e.preventDefault();
+			if (confirm('Очистить форму заказа материала?') !== true) {
+				return false;
+			}
+			$('.close').trigger('click');
+		});
+
+	} else {
+		$('.row .email span.glyphicon-ok').on('click', function(e) {
+			e.preventDefault();
+			var val = $(this).siblings('#adminsendto').val();
+
+			$.post('ajax.php?changeEmail', {value:val}, function(data) {
+				console.log(data);
+			});
+		});
 	}
 
 
@@ -859,7 +1026,7 @@ function initMap() {
 
 function mapAutocomplete() {
 	var suggestView = new ymaps.SuggestView('deliv_address');
-// /admin-address
+	// /admin-address
 	suggestView.events.add('select',function(e) {
 		ymaps.geocode(e.get('item').value, {
 			results: 1 
@@ -1083,7 +1250,7 @@ function showUnvisible() {
 
 	});
 
-	$('.unvisible:not(.forpay)').removeClass('unvisible');
+	$('.container>div.unvisible:not(.forpay)').removeClass('unvisible');
 	$('#payment_type, #delivery_type, #moskow_way').selectmenu()
 	      .selectmenu( "menuWidget" )
 	        .addClass( "overflow" );
@@ -1631,4 +1798,20 @@ function startEventAfter(funct, eventName, inerv) {
 		funct();
 		delete eventsTimeouts['eventName'];
 	}, inerv);
+}
+
+function runTranspRequest(name) {
+	if("undefined" === typeof transpRequestStack[name]) return;	
+}
+
+function recalcTransportWithoutUnload() {
+	var comnprice = 0;
+
+	$('#transportation td[name=comnprice]').each(function(i, el) {
+		comnprice += Math.ceil($(el).text());
+	});
+
+	$('#transportcomnprice').text(comnprice);
+	$('#order_detail_delivery table tr.delivery .material_comn_price').text(comnprice);
+
 }

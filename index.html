@@ -287,7 +287,7 @@
 				<div class="col-lg-12 col-md-12 col-sm-12">
 					<!-- There yandex maps -->
 
-					<input type="text" placeholder="Шоссе" class="col-lg-5 col-md-5 col-sm-5">	
+					<input type="text" id="highway" placeholder="Шоссе" class="col-lg-5 col-md-5 col-sm-5">	
 					<input type="text" id="km2mcad" placeholder="Км. от МКАД" class="col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-lg-5 col-md-5 col-sm-5">
 				</div>
 
@@ -332,9 +332,9 @@
 			<!-- automate selecting of transport -->
 			<!-- also add posibility to manaul edit (select vehicle, number, with calc) -->
 		</div>
-			<p><strong>Разгрузка</strong></p>
 		
-			<div class="col-lg-9 col-md-9 col-sm-9">
+			<div class="col-lg-9 col-md-9 col-sm-9 unvisible">
+			<p><strong>Разгрузка</strong></p>
 				<table id="unloading" class="table table-striped table-bordered table-hover">
 					<thead>
 						<tr>
@@ -347,9 +347,9 @@
 					<tbody>
 						<tr>
 							<td>Услуги крана манипулятора</td>
-							<td></td>
-							<td></td>
-							<td></td>
+							<td name="amount_of_work"></td>
+							<td name="price"></td>
+							<td name="comnprice"></td>
 						</tr>
 					</tbody>
 				</table>
@@ -358,7 +358,7 @@
 		
 		<div class="col-lg-3 col-md-3 col-sm-3 col-lg-offset-9 col-md-offset-9 col-sm-offset-9 centered">
 			<p><strong>Общая стоимость</strong></p>
-			<div><div class="comn_ col-lg-12 col-md-12 col-sm-12"><span></span></div></div>
+			<div><div class="comn_ col-lg-12 col-md-12 col-sm-12"><span id="transportcomnprice"></span></div></div>
 		</div>
 	</div>
 
@@ -386,7 +386,7 @@
 						<td colspan="1" class="material_comn_price"></td>
 					</tr>
 					<tr class="numbers-row delivery">
-						<td colspan="3" class="toleft">Доставка</td>
+						<td colspan="3" class="">Доставка</td>
 						<td colspan="1">шт.</td>
 						<td colspan="1" class="material_number"></td>
 						<td colspan="1" class="material_price"></td>
@@ -416,9 +416,9 @@
 		<textarea id="comment" class="col-lg-10 col-md-10 col-sm-10" placeholder="Комментарий к заказу"></textarea>
 
 		<div class="center-block col-lg-9 col-md-11 col-sm-9">
-			<input type="submit" value="Очистить форму заказа">
-			<input type="submit" value="Очистить форму заказа материала">
-			<input type="submit" value="Оформить заказ">
+			<input type="submit" id="clear_order" value="Очистить форму заказа">
+			<input type="submit" id="clear_material_order" value="Очистить форму заказа материала">
+			<input type="submit" id="checkout" value="Оформить заказ">
 		</div>		
 	</div>
 </div>

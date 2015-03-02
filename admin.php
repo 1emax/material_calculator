@@ -38,7 +38,7 @@ include(__DIR__ . '/index.php');
       <ul class="nav navbar-nav navbar-right nav-tabs" role="tablist">
         <li class="active"><a href="#manufacturers" aria-controls="manufacturers" role="tab" data-toggle="tab" class="current-tab">Производители</a></li>
         <li><a href="#transport" aria-controls="transport" role="tab" data-toggle="tab">Транспорт</a></li>
-        <li><a href="#other" aria-controls="other" role="tab" data-toggle="tab">Оплата/доставка</a></li>
+        <li><a href="#other" aria-controls="other" role="tab" data-toggle="tab">Оплата/доставка/настройки</a></li>
       </ul>
     </div>
   </div>
@@ -305,12 +305,16 @@ include(__DIR__ . '/index.php');
     
     <div class="col-sm-9 col-md-10 main">
       <h1 class="page-header">Оплата и доставка</h1>
-
+       <?php $db = new DB();
+       $db->query = "SELECT value FROM `settings` where name='email'";
+       $dbRes = $db->get();
+       $adminEmail = current($dbRes);
+       ?>
+      <div class="col-sm-5 col-md-5 col-sm-offset-7 col-md-offset-7 email"><span>E-mail </span><input type="text" name="sendto" id="adminsendto" value="<?php echo $adminEmail['value'];?>"> <span style="cursor:pointer" class="glyphicon glyphicon-ok" aria-hidden="true" title="Редактировать"></span></div>
       <h2 class="sub-header">Оплата</h2>      
 
       <div id="admin-payment" class="table-responsive">
-       <?php $db = new DB();
-          	$db->select();
+	<?php   $db->select();
           	$db->table('payments');
           	$payments = $db->get();
           ?>
@@ -328,14 +332,14 @@ include(__DIR__ . '/index.php');
 
           	 <tr name="id<?php echo $payment['id']; ?>">
               <td><?php echo $k+1; ?></td>
-              <td><?php echo $payment['name']; ?></td>
+              <td name="name"><?php echo $payment['name']; ?></td>
               <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
             </tr>
 
           <?php } ?>
           </tbody>
         </table>
-        <div class="col-sm-2 col-md-2 col-md-offset-9 col-md-offset-9">
+        <div class="col-sm-2 col-md-2 col-md-offset-9 col-sm-offset-9">
       	<button class="btn btn-success btn-xs" id="for-admin-payment" type="submit">
       		<span>Добавить вид оплаты</span>
       	</button>
@@ -364,7 +368,7 @@ include(__DIR__ . '/index.php');
 
           	<tr name="id<?php echo $delivery['id']; ?>">
               <td><?php echo $k+1; ?></td>
-              <td><?php echo $delivery['name']; ?></td>
+              <td  name="name"><?php echo $delivery['name']; ?></td>
               <td><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Редактировать"></span><span class="glyphicon glyphicon-remove" aria-hidden="true" title="Удалить"></span></td>
             </tr>
 

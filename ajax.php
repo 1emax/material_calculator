@@ -129,8 +129,13 @@ if (isset($G['getItems'])) {
 	if(!isset($P['colums']) || $P['colums'] == '') $P['colums'] = '*';
 
 	echo json_encode( $Calc->getFew($P['table'], $P['ids'], $P['colums']) );
+} elseif (isset($G['changeEmail'])) {
+	$db = new DB();
+	$db->query = "UPDATE settings SET `value` = '" .$P['value'] . "' WHERE name='email'";
+	$db->set();
 }
 
+exit;
 
 function getIds($val) {
 
