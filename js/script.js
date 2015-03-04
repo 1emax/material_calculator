@@ -833,7 +833,7 @@ $(function() {
 			if(typeof tempRequestContainer['result'] == "object") tempRequestContainer['result'].abort();
 
 
-			tempRequestContainer['calc'] = $.post('calc_win_transports.php', {road:roadData,pallets:palletsData,cubicMetersWeight:cubicMetersWeightData}, function(data) {
+			tempRequestContainer['calc'] = $.post('calc_win_transports.php', {'road':roadData,'pallets':palletsData,'cubicMetersWeight':cubicMetersWeightData, 'delivType':delivType}, function(data) {
 
 				if(typeof data == 'object') {
 					var unique = {};

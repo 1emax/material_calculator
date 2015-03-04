@@ -1,7 +1,7 @@
 <?php
 
 class DB {
-	protected $host = 'mywat.mysql.ukraine.com.ua';
+	protected $host = 'localhost';//mywat.mysql.ukraine.com.ua
 	protected $name = 'mywat_test';
 	protected $user = 'mywat_test';
 	protected $password = 'hmarmpzr';
