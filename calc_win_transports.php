@@ -1,6 +1,8 @@
 <?php
 include 'index.php';
 
+if (!!$Calc) unset($Calc);
+
 $road = 1000;
 $pallets = 9; // max - 500 pallets
 $cubicMetersWeight = 80007; // max - 220 000 m3
@@ -12,20 +14,22 @@ if(isset($_POST['road']) && isset($_POST['pallets']) && isset($_POST['cubicMeter
 	$cubicMetersWeight = intval($_POST['cubicMetersWeight']); // max - 220 000 m3
 	$delivType = $_POST['delivType'];
 }
+//add mcad and another tax
+unset($_POST, $_GET);
 
 $Transport = new Transport();
 $transports = $Transport->getAll(array('id', 'LOWER(name) as name', 'capacity', 'pallets','rate', 'mcad'));
 $Transport->closeConnection();
 unset($Transport);
 
-// print_r($transports);
-// echo json_encode( ($transports[3]['name'] == 'манипулятор') );
-// print_r($transports);
 
 $sel = new TransportSelector($transports, $road, $pallets, $cubicMetersWeight, $delivType);
+unset($transports);
 $sel->shuffleIt();
-echo json_encode($sel->shuffleIt());
-// echo json_encode(explode(',', ltrim($sel->resultTransports['winIds'], ',')));
+// echo json_encode($sel->shuffleIt());
+// echo json_encode($sel->resultTransports);
+echo json_encode(explode(',', ltrim($sel->resultTransports['winIds'], ',')));
+
 
 
 class TransportSelector {
@@ -36,7 +40,8 @@ class TransportSelector {
 	public $resultTransports = array();
 	public $delivType = '';
 	public $needUnload = false;
-	public $parameters = array();
+	// public $parameters = array();
+
 
 	public function __construct($transports, $road, $pallets, $cubicMetersWeight, $delivType) {
 		$this->transports = $transports;
@@ -50,60 +55,55 @@ class TransportSelector {
 	}
 
 	public function shuffleIt($comnPrice = false, $weightLeft = false, $palletsLeft = false, $swinIds = '', $hasUnl = false) {
-		if($comnPrice == false) $comnPrice = 0;
-		if($weightLeft == false) $weightLeft = $this->cubicMetersWeight;
-		if($palletsLeft == false) $palletsLeft = $this->pallets;
-
-		
-			
+		if($comnPrice === false) $comnPrice = 0;
+		if($weightLeft === false) $weightLeft = $this->cubicMetersWeight;
+		if($palletsLeft === false) $palletsLeft = $this->pallets;			
 
 		foreach ($this->transports as $transport) {
-			$price = $transport['mcad'] * $this->road + $transport['rate'];
-			$comnPrice += $price;
-			// echo 21;
-			if(!$this->isAcceptablePrice($comnPrice)) continue;
-			if($this->needUnload && !$hasUnl) $hasUnl = ($transport['name'] == 'манипулятор');
-			// echo json_encode(array($hasUnl, $this->needUnload));
-			$winIds = $swinIds . ','. strval($transport['id']);
-			// echo json_encode($winIds);
+			// if($transport['id'] != 1 && $transport['id'] != 2 && $transport['id'] != 3) continue;
 
-			// echo 'false<br>';
-			// if(!$hasUnl) {
-				// echo 5555;
-				// exit();
-			// } else {
-				// echo json_encode(!($this->needUnload && !$hasUnl)), ' ';
-			// }
-
-			$vehiclePerWeight = $weightLeft / $transport['capacity'];
-			$vehiclePerPallets = $palletsLeft / $transport['pallets'];
-// !($this->needUnload && !$hasUnl) 
-			if (!($this->needUnload && !$hasUnl) && $vehiclePerWeight <= 1 && $vehiclePerPallets <= 1) {
-				$this->resultTransports = array(strval($comnPrice) => $transport, 'winIds'=>$winIds);
+			if($this->needUnload && !$hasUnl && ($transport['name'] != 'манипулятор')) {
 				continue;
-				 // поменять на массив итогового транспорта 
 			}
 
 
-			// if ($vehiclePerPallets <= 1) {
-			// 	$this->resultTransports = array(strval($comnPrice) => $transport, 'winIds'=>$winIds);
-			// 	continue;
-			// 	 // поменять на массив итогового транспорта 
-			// }
+// 9600 - 10p (18) - 5800m (20760)
+
+// + 17600 -24p (-6) - 23200m(-2440)
+
+// + 11300 -22px (-4) - 21500m(~-1000)
+
+			$price = $transport['mcad'] * $this->road + $transport['rate'] + $comnPrice;
+			if(!$this->isAcceptablePrice($price)) continue;
+			// $comnPrice += $price;
+			// unset($price);
+
 
 			$vehiclePerWeightLeft = $weightLeft - $transport['capacity'];
 			$vehiclePerPalletsLeft = $palletsLeft - $transport['pallets'];
+			$winIds = $swinIds . ','. strval($transport['id']);// .'|'. $vehiclePerWeightLeft . ':'.$vehiclePerPalletsLeft . '='.$comnPrice;
+			// if($hasUnl)
+			// $this->parameters[] = array('price'=>$price, 'WLeft'=>$vehiclePerWeightLeft, 'PLeft'=>$vehiclePerPalletsLeft, 'winIds'=>$winIds, 'Acceptable'=>$this->isAcceptablePrice($price));
 
-			$this->parameters[] = array('cmnPrc'=>$comnPrice, 'WLeft'=>$vehiclePerWeightLeft, 'PLeft'=>$vehiclePerPalletsLeft, 'winIds'=>$winIds, 'hasUnl'=>$hasUnl);
-			// print_r($transport);
+			unset($transport);
+			// $this->parameters[] = $winIds;
+
+			// $vehiclePerWeight = $weightLeft / $transport['capacity'];
+			// $vehiclePerPallets = $palletsLeft / $transport['pallets'];
+
+			if ($vehiclePerWeightLeft <= 0 && $vehiclePerPalletsLeft <= 0) {
+				$this->resultTransports = array($price => '', 'winIds'=>$winIds);
+				continue;
+			}
+
+			$this->shuffleIt($price, $vehiclePerWeightLeft, $vehiclePerPalletsLeft, $winIds, true);
+
 			// echo "\n<br>$price руб \n<br>=$vehiclePerWeight таких машин по весу \n<br>= $vehiclePerWeightLeft осталось кг для остальных машин \n<br>= $vehiclePerPallets машин по поддонам \n<br>= $vehiclePerPalletsLeft осталось по поддонам<br><br>";
-
-			// break;
 		}
 
-		return $this->parameters;
+		// return $this->parameters;
 
-			// $this->shuffleIt($comnPrice, $vehiclePerWeightLeft, $vehiclePerPalletsLeft, $winIds, $hasUnl);
+
 
 		// чтоб не считать повторно эту машину - можно ее исключить в след цикле для себя же. Во втором - исключить еще одну. и т.д.
 		// если по весу или поддонам <= 1, то прекратить подбор этого варианта. В массив с ценами как индексами
