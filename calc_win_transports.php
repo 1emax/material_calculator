@@ -40,6 +40,7 @@ class TransportSelector {
 	public $resultTransports = array();
 	public $delivType = '';
 	public $needUnload = false;
+	private $originals = array();
 	// public $parameters = array();
 
 
@@ -60,36 +61,27 @@ class TransportSelector {
 		if($palletsLeft === false) $palletsLeft = $this->pallets;			
 
 		foreach ($this->transports as $transport) {
-			// if($transport['id'] != 1 && $transport['id'] != 2 && $transport['id'] != 3) continue;
 
-			if($this->needUnload && !$hasUnl && ($transport['name'] != 'манипулятор')) {
+			if(!$hasUnl && $this->needUnload && ($transport['name'] != 'манипулятор')) {
 				continue;
 			}
 
-
-// 9600 - 10p (18) - 5800m (20760)
-
-// + 17600 -24p (-6) - 23200m(-2440)
-
-// + 11300 -22px (-4) - 21500m(~-1000)
-
 			$price = $transport['mcad'] * $this->road + $transport['rate'] + $comnPrice;
 			if(!$this->isAcceptablePrice($price)) continue;
-			// $comnPrice += $price;
-			// unset($price);
+			// trying for perfomance:
+			// - some code in iteration - to functions
+			// - save list of origin ids in memory
+			// - save results for the same data in memory
+			// - write function on C or C++
+			// - get optimal price (best vehicles)
 
+			$winIds = $swinIds . ','. strval($transport['id']);
+			if(!$this->isOrigTransp($winIds)) continue;
 
 			$vehiclePerWeightLeft = $weightLeft - $transport['capacity'];
 			$vehiclePerPalletsLeft = $palletsLeft - $transport['pallets'];
-			$winIds = $swinIds . ','. strval($transport['id']);// .'|'. $vehiclePerWeightLeft . ':'.$vehiclePerPalletsLeft . '='.$comnPrice;
-			// if($hasUnl)
-			// $this->parameters[] = array('price'=>$price, 'WLeft'=>$vehiclePerWeightLeft, 'PLeft'=>$vehiclePerPalletsLeft, 'winIds'=>$winIds, 'Acceptable'=>$this->isAcceptablePrice($price));
 
 			unset($transport);
-			// $this->parameters[] = $winIds;
-
-			// $vehiclePerWeight = $weightLeft / $transport['capacity'];
-			// $vehiclePerPallets = $palletsLeft / $transport['pallets'];
 
 			if ($vehiclePerWeightLeft <= 0 && $vehiclePerPalletsLeft <= 0) {
 				$this->resultTransports = array($price => '', 'winIds'=>$winIds);
@@ -97,22 +89,24 @@ class TransportSelector {
 			}
 
 			$this->shuffleIt($price, $vehiclePerWeightLeft, $vehiclePerPalletsLeft, $winIds, true);
-
-			// echo "\n<br>$price руб \n<br>=$vehiclePerWeight таких машин по весу \n<br>= $vehiclePerWeightLeft осталось кг для остальных машин \n<br>= $vehiclePerPallets машин по поддонам \n<br>= $vehiclePerPalletsLeft осталось по поддонам<br><br>";
 		}
-
-		// return $this->parameters;
-
-
-
-		// чтоб не считать повторно эту машину - можно ее исключить в след цикле для себя же. Во втором - исключить еще одну. и т.д.
-		// если по весу или поддонам <= 1, то прекратить подбор этого варианта. В массив с ценами как индексами
-		// если по цене больше любой цены из существующих - прекратить
 	}
 
 	public function withUnload() {
 
 
+	}
+
+	public function isOrigTransp($winIds) {
+		$ids = explode(',', $winIds);
+		sort($ids);
+		$sIds = implode(',', $ids);
+
+		if(isset($this->originals[$sIds])) return false;
+
+		$this->originals[$sIds] = '';
+
+		return true;
 	}
 
 	public function isAcceptablePrice($itemPrice) {
