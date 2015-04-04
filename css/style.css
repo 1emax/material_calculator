@@ -77,12 +77,12 @@ div.form_cont .f_help  {
 	border-right: 1px gray solid;
 }
 
-input[type=text] {
+input[type=text], input[type=email] {
 	height: 26px;	
 }
 
 .narrow input[type=text] {
-	width: 30px;
+	width: 50px;
 }
 
 .form_cont .number {
@@ -288,104 +288,23 @@ select#payment_type, select#delivery_type, select#moskow_way{
 	width: 300px;
 }
 
-/*select {
-	width: 250px;
-}
-*/
-/*
-h2 {
+#transportation .delete, #transportation .add {
+	cursor: pointer;
 	text-align: center;
 }
 
-
-
-
-#person {
-	border:1px gray solid;
-}*/
-
-/*.container {
-	width: 720px;
-	margin: 0 auto;
-}*/
-/*
-#radio {
-	display: table;
-	margin: 0 auto;
-	margin-bottom: 6px;
+.edit-transport-custom {
+	float: right;
+    padding: 5px;
+    border-radius: 15px;
+    border: 1px black solid;
+    cursor: pointer;
 }
 
-#person_data{
-	margin: 0 auto;
+input.error {
+	border: 1px red solid;
 }
 
-
-
-#person_data input {
-	display: inline-block;
-	margin: 0 0 6px 0;	
+.transportPallets {
+	padding-left: 10px;
 }
-
-#additionally>div {
-	display: block;
-	margin: 0 auto;
-}
-
-#additionally input{
-	display: inline-block;
-	font-size: 14px;
-}
-
-select.overflow {
-	height: 200px;
-}
-
-fieldset>div {
-	text-align: center;
-	display: inline-block;
-	margin: 30px 0 0 0;
-}
-
-label {
-	display: block;
-}
-
-
-
-
-.added_mix, .added_block {
-	display: inline-block;
-}
-
-
-
-
-
-#input_data .f_help {
-	margin: 5px 0 0 0;
-	display: inline-block;
-}
-
-#input_data form input {
-	margin: 5px 0 0 0;
-	display: block;
-}
-*/
-/*#input_data form:before {
-	content: "X";
-	left:-30px;
-}*/
-
-/* UI corrections*/
-/*.ui-selectmenu-button span.ui-selectmenu-text{
-	padding: 0;
-}
-
-input[type=submit] {
-	font-size: 14px;
-}
-
-.ui-state-focus {
-	background: #f6f6f6 url("images/ui-bg_glass_100_f6f6f6_1x400.png") 50% 50% repeat-x;
-	color: #1c94c4;
-}*/
