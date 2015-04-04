@@ -1,3 +1,8 @@
+/*jshint multistr: true */
+/* jshint -W097 */
+/*global $:false */
+/*jslint browser:true */
+/*jslint devel:true */
 "use strict";
 var debugMessage = '';
 var enableCalc = false;
@@ -8,7 +13,7 @@ var transpRequestStack = {};
 
 var $addBlock = {};
 var $addMix = {};
-var inputDataItems = {"blocks":{"length":0,"items":{}},"mixes":{"length":0,"items":{}}};
+var inputDataItems = {"blocks": {"length": 0,"items": {}},"mixes": {"length": 0,"items": {}}};
 var trArr = {"number_per_pallet":"Кол-во штук на 1 поддоне",	"number_per_cubic_meter":"Кол-во штук в 1 м<sup>3</sup>",	"weight":"Вес блока",	"weight_pallet_and_block":"Вес поддона с блоками",	"strength_class":"Класс прочности", "breaking_strength":"Предел прочности", "thermal_conductivity":"Теплопроводность",	"frost_resistance":"Морозостойкость"};
 var trArrHelper = {"number_per_pallet":"шт",	"number_per_cubic_meter":"шт",	"weight":"кг",	"weight_pallet_and_block":"кг",	"strength_class":"-", "breaking_strength":"кг/см<sup>2</sup>", "thermal_conductivity":"Вт/м*C<sup>0</sup>",	"frost_resistance":"Циклов"};
 var addTransportCols = ['',	'name','capacity','dimensions','pallets','rate','mcad','inside_mcad','inside_ttk','inside_sad_kolco'];
@@ -94,19 +99,19 @@ $(function() {
 			$materialEl.selectmenu('disable').find(':not(.not_sel)').remove();
 			$('#products #manufacturer').selectmenu('disable').find(':not(.not_sel)').remove();
 
-			if(data!==null && data['items'] !== null &&  data['items'].length != 0) {
+			if(data!==null && data.items !== null &&  data.items.length !== 0) {
 
-				var materials = data['items'];
+				var materials = data.items;
 
 				for(var i in materials) {
 					var el = materials[i];
-					$materialEl.append('<option id="material-'+el['id']+'">'+el['name'] + '</option>');
+					$materialEl.append('<option id="material-'+el.id+'">'+el.name + '</option>');
 				}
 
 				$materialEl.selectmenu('refresh').selectmenu('enable');
 
-				if(data['characts'] !== null &&  data['characts'].length != 0) {
-					var characts = data['characts'];
+				if(data.characts !== null &&  data.characts.length !== 0) {
+					var characts = data.characts;
 					var len = ++inputDataItems.blocks.length;
 					inputDataItems.blocks.items[len] = changeKey(characts, 'id');
 				}
@@ -132,13 +137,13 @@ $(function() {
 			var $manufacturerEl = $('#products #manufacturer');
 			$manufacturerEl.selectmenu('disable').find(':not(.not_sel)').remove();
 
-			if(data!==null && data['items'] !== null &&  data['items'].length != 0) {
+			if(data!==null && data.items !== null &&  data.items.length !== 0) {
 
-				var manufacturers = data['items'];
+				var manufacturers = data.items;
 
 				for(var i in manufacturers) {
 					var el = manufacturers[i];
-					$manufacturerEl.append('<option id="manufacturer-'+el['id']+'">'+el['name'] + '</option>');
+					$manufacturerEl.append('<option id="manufacturer-'+el.id+'">'+el.name + '</option>');
 				}
 
 				$manufacturerEl.selectmenu('refresh').selectmenu('enable');
@@ -185,8 +190,8 @@ $(function() {
 		var chAvai = materCharactsAvaible(materId, manufctrId);
 
 		$bl.find('select option:not(.not_sel)').remove();
-		createOption($bl.find('select.size'), chAvai['size'], 'size');
-		createOption($bl.find('select.density'), chAvai['density'], 'density');
+		createOption($bl.find('select.size'), chAvai.size, 'size');
+		createOption($bl.find('select.density'), chAvai.density, 'density');
 
 		if(blocksNumber > 1) {
 			blocksNumber = $('.blocks .block form:last').attr('name');
@@ -232,19 +237,36 @@ $(function() {
 	// when selecting delivery
 	$('select#delivery_type').selectmenu({change: function(e, ui) {
 		var $elem = $(ui.item.element);
+		$('#date_of_prepayment, #shipment_date').addClass('hide');
 
 		if($elem.attr('id') == 'unloading_delivery' || $elem.attr('id') == 'not_unloading_delivery') {
 			$('.forpay').removeClass('unvisible');
 			$('#order_detail_delivery').trigger('tablechanged');
 			$('#transport').trigger('changesfortransport');
-
+			$('#date_of_prepayment').removeClass('hide');
 		} else {
 			$('.forpay').addClass('unvisible');
+		}
+
+		if($elem.attr('id') == 'pickup') {			
+			$('#shipment_date').removeClass('hide');
 		}
 
 		// console.log(e, ui)
 		 
 	}});
+
+	$('select#payment_type').selectmenu({change: function(e, ui) {
+		var $elem = $(ui.item.element);
+
+		if($elem.attr('id') == 'pay_on_object') {
+			$('#delivery_date').removeClass('hide');
+		} else {
+			$('#delivery_date').addClass('hide');
+		}
+	}});
+
+	
 
 
 	//admin page
@@ -256,7 +278,7 @@ $(function() {
 	  $.cookie('curr-tab', $(this).attr('href'), { expires: 365, path: window.location.pathname });
 
 	  $(this).tab('show');
-	})
+	});
 
 	$('.dropdown-toggle').dropdown();
 
@@ -355,7 +377,7 @@ $(function() {
 		var id = '';
 
 		if(typeof $row.attr('name') == 'undefined') {
-			console.log(false)
+			console.log(false);
 		} else {
 			id = $row.attr('name').split('id').join('');
 		}
@@ -380,7 +402,7 @@ $(function() {
 		var thisEl = this;
 
 		if(typeof $row.attr('name') == 'undefined') {
-			console.log(false)
+			console.log(false);
 		} else {
 			id = $row.attr('name').split('id').join('');
 		}
@@ -431,9 +453,11 @@ $(function() {
 		newMapPoint('.admin-coords', $('#deliv_address').val());
 		// Костыль от непонятного действия яндекс-карт
 		if(isAdmin){
-			myMap.setBounds(mapObjs.manufacturer.geometry.getBounds(),{
-                checkZoomRange: true // проверяем наличие тайлов на данном масштабе.
-            });
+			if(typeof myMap === "undefined") initMap(function() {
+				myMap.setBounds(mapObjs.manufacturer.geometry.getBounds(),{
+	                checkZoomRange: true // проверяем наличие тайлов на данном масштабе.
+	            });
+			});			
 		}
 	});
 
@@ -474,7 +498,7 @@ $(function() {
 		var thisEl = this;
 
 		if(typeof $row.attr('name') == 'undefined') {
-			console.log(false)
+			console.log(false);
 		} else {
 			id = $row.attr('name').split('id').join('');
 		}
@@ -503,7 +527,7 @@ $(function() {
 		var materialId = $row.parents('.material').attr('id').split('mater').join('');
 
 		if(typeof $row.attr('name') == 'undefined') {
-			console.log(false)
+			console.log(false);
 		} else {
 			id = $row.attr('name').split('id').join('');
 		}
@@ -516,7 +540,7 @@ $(function() {
 		var manufacturer_id = $row.parents('#accordion').attr('manufacturerid');
 
 		rowData.product_id = materialId;
-		rowData['manufacturer_id'] = manufacturer_id;
+		rowData.manufacturer_id = manufacturer_id;
 		rowData.price = rowData.price.replace(/[^\/\d]/g,'');
 		rowData.size = rowData.width + 'x' + rowData.height + 'x' + rowData.length;
 		delete rowData.width;
@@ -549,7 +573,7 @@ $(function() {
 		var thisEl = this;
 
 		if(typeof $row.attr('name') == 'undefined') {
-			console.log(false)
+			console.log(false);
 		} else {
 			id = $row.attr('name').split('id').join('');
 		}
@@ -581,8 +605,8 @@ $(function() {
 			if(typeof data.number_per_pallet !== 'undefined') {
 				for(var i in data) {
 
-					if(i == 'number_per_pallet' && (data[i] == '' || data[i] == null) ) data[i] = iNumber_per_pallet;
-					if(i == 'number_per_cubic_meter' && (data[i] == '' || data[i] == null) ) data[i] = fNumber_per_cubic_meter;
+					if(i == 'number_per_pallet' && (data[i] === '' || data[i] === null) ) data[i] = iNumber_per_pallet;
+					if(i == 'number_per_cubic_meter' && (data[i] === '' || data[i] === null) ) data[i] = fNumber_per_cubic_meter;
 
 					$modal.find('div[name='+i + '] input').val(data[i]);
 				}
@@ -606,7 +630,7 @@ $(function() {
 			name = names[i];
 			val = $modal.find('div[name='+name + '] input').val();
 
-			if(val != '' && val.length != 0) {
+			if(val !== '' && val.length !== 0) {
 				values[name] = val;
 			} else {
 				hasEmpty = true;
@@ -665,12 +689,12 @@ $(function() {
 
 			var $currentBlock = $('.meters-row[name='+stackNumber+'],.numbers-row[name='+stackNumber+']');
 
-			if($currentBlock.length == 0) {
+			if($currentBlock.length === 0) {
 				var $lastResultRow = $('#order_detail .meters-row:last, #order_detail_delivery .meters-row:last');
-				var $currentBlock = $(blockAdd).clone();
+				$currentBlock = $(blockAdd).clone();
 				$currentBlock.attr('name', stackNumber);
 
-				if($lastResultRow.length == 0) {
+				if($lastResultRow.length === 0) {
 					$('#order_detail table tbody').prepend($currentBlock);
 					$('#order_detail_delivery table tbody').prepend($currentBlock.clone());
 
@@ -718,8 +742,9 @@ $(function() {
 		});
 
 		$(document).on('tablechanged', '#order_detail, #order_detail_delivery', function(e) {
+			var delivType = '';
 			if($(this).attr('id') == "order_detail_delivery") {
-				var delivType = $('select#delivery_type option:selected').attr('id');
+				delivType = $('select#delivery_type option:selected').attr('id');
 				if(delivType != "unloading_delivery" && delivType != "not_unloading_delivery") return;
 			}
 
@@ -736,8 +761,8 @@ $(function() {
 
 			$(this).find('.numbers-row .material_comn_price').each(function(i, el){ 
 				var val = $(el).text();
-				if(val == '') val = 0;
-				tmpV+= parseFloat(val);
+				if(val === '') val = 0;
+				tmpV += parseFloat(val);
 			});
 
 			tmpV = (Math.ceil(tmpV*100)/100).toString().replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
@@ -745,7 +770,7 @@ $(function() {
 			$(this).find('.not_deliv_total_cost').text(tmpV +' руб.');
 
 			if($(this).attr('id') == "order_detail") {
-				var delivType = $('select#delivery_type option:selected').attr('id');
+				delivType = $('select#delivery_type option:selected').attr('id');
 				if(delivType != "unloading_delivery" && delivType != "not_unloading_delivery") return;
 
 				$('#transport').trigger('changesfortransport');
@@ -789,7 +814,8 @@ $(function() {
 		});
 
 		$(document).on('changesfortransport', 'div#transport', function(e) {
-			var roadData = Math.ceil( $('#km2mcad').val() );
+			var km2mcad = $('#km2mcad').val();
+			var roadData = Math.ceil( km2mcad );
 			var palletsData = Math.ceil($('#order_detail tbody .pallets .material_number').text());
 			var gluesData = Math.ceil($('#order_detail tbody .mixes .material_number').text());
 			var delivType = $('#delivery_type option:selected').attr('id');
@@ -809,9 +835,9 @@ $(function() {
 
 			var cubicMetersWeightData = cubicMeters;
 
-			if(roadData == 0 || cubicMetersWeightData == 0 || palletsData == 0) return;
+			if(km2mcad === '' || cubicMetersWeightData === 0 || palletsData === 0) return;
 
-			var uniqVal = '' +  roadData.toString()+ palletsData.toString()+ cubicMetersWeightData.toString();
+			var uniqVal = '' +  roadData.toString()+ palletsData.toString()+ cubicMetersWeightData.toString() + delivType;
 
 			if(delivType == 'unloading_delivery') {
 				$('#unloading').parent().removeClass('unvisible');
@@ -821,19 +847,19 @@ $(function() {
 				recalcTransportWithoutUnload();
 			}
 
-			if($(self).attr('oldval') == uniqVal) {
+			if($(this).attr('oldval') == uniqVal) {
 				return false;
 			} 
 
-			console.log('transport calc changed', $(self).attr('oldval'), uniqVal);
-			$(self).attr('oldval', uniqVal);
+			console.log('transport calc changed', $(this).attr('oldval'), uniqVal);
+			$(this).attr('oldval', uniqVal);
 			var allTransportPrices = 0;
 
-			if(typeof tempRequestContainer['calc'] == "object") tempRequestContainer['calc'].abort();
-			if(typeof tempRequestContainer['result'] == "object") tempRequestContainer['result'].abort();
+			if(typeof tempRequestContainer.calc == "object") tempRequestContainer.calc.abort();
+			if(typeof tempRequestContainer.result == "object") tempRequestContainer.result.abort();
 
 
-			tempRequestContainer['calc'] = $.post('calc_win_transports.php', {'road':roadData,'pallets':palletsData,'cubicMetersWeight':cubicMetersWeightData, 'delivType':delivType}, function(data) {
+			tempRequestContainer.calc = $.post('calc_win_transports.php', {'road':roadData,'pallets':palletsData,'cubicMetersWeight':cubicMetersWeightData, 'delivType':delivType}, function(data) {
 
 				if(typeof data == 'object') {
 					var unique = {};
@@ -843,9 +869,9 @@ $(function() {
 						unique[uniqEl] = uniqEl;
 					}
 
-					if(typeof tempRequestContainer['result'] == "object") tempRequestContainer['result'].abort();
+					if(typeof tempRequestContainer.result == "object") tempRequestContainer.result.abort();
 
-					tempRequestContainer['result'] = $.post('ajax.php?getFew', {ids:unique, table:'transport'}, function(transportObjects) {
+					tempRequestContainer.result = $.post('ajax.php?getFew', {ids:unique, table:'transport'}, function(transportObjects) {
 						if(typeof transportObjects != 'object') console.log(transportObjects);
 						var unique = {};
 						var allTransportNumber = 0;
@@ -858,6 +884,8 @@ $(function() {
 							else unique[uniqEl] = 1;
 						}
 
+						$('table#transportation tbody').empty().parent().data('cubicMeters', cubicMeters).data('pallets', palletsData);
+
 						for(var id in unique) {
 							var number = unique[id];
 							var transportObject = transportObjects[id];
@@ -869,6 +897,8 @@ $(function() {
 							addTransportRow(transportObject);
 						}
 
+						$('.edit-transport-custom').removeClass('glyphicon-ok').addClass('glyphicon-pencil');
+
 						$('#transportcomnprice').text(allTransportPrices);
 						$('#order_detail_delivery table tr.delivery .material_comn_price').text(allTransportPrices);
 						$('#order_detail_delivery table tr.delivery .material_number').text(allTransportNumber);
@@ -879,12 +909,13 @@ $(function() {
 						} else {
 							$('#order_detail_delivery').trigger('tablechanged');
 						}
+						customTransportToNormal($('table#transportation'));
 
 						console.log(unique);
 						console.log(transportObjects);
 					}, 'json')
 					.always(function() {
-						delete tempRequestContainer['result'];
+						delete tempRequestContainer.result;
 					});
 
 				} else {
@@ -892,26 +923,31 @@ $(function() {
 				}
 			}, 'json')
 			.always(function() {
-				delete tempRequestContainer['calc'];
+				delete tempRequestContainer.calc;
 			});
 		});
 
 		$(document).on('with_unload','#unloading', function(e) {
+			if($(this).parent().hasClass('unvisible')) return;
+
 			var vehiclesWithUnload = 0;
 			var vehPrices = 0;
+			var handlersPrice = 0;
 
 			$('#transportation tr[name]').each(function(i, el) {
 				if($(el).find('td[name=name]').text().toLowerCase() == 'бортовой автомобиль') {
 					vehiclesWithUnload += Math.ceil( $(el).find('td[name=number]').text() );
 					vehPrices += Math.ceil( $(el).find('td[name=comnprice]').text() );
+				} else {
+					handlersPrice += Math.ceil( $(el).find('td[name=comnprice]').text() );
 				}
 			});
 
 
 			$(this).find('td[name=amount_of_work]').text(vehiclesWithUnload);
-			$(this).find('td[name=price]').text(vehiclesWithUnload);
+			$(this).find('td[name=price]').text(vehiclesWithUnloadPrice);
 			$(this).find('td[name=comnprice]').text(vehiclesWithUnload*vehiclesWithUnloadPrice);
-			var commonPrice = vehPrices + vehiclesWithUnload*vehiclesWithUnloadPrice;
+			var commonPrice = vehPrices + vehiclesWithUnload*vehiclesWithUnloadPrice + handlersPrice;
 			$('#transportcomnprice').text(commonPrice);
 			$('#order_detail_delivery table tr.delivery .material_comn_price').text(commonPrice);
 			$('#order_detail_delivery').trigger('tablechanged');
@@ -924,12 +960,23 @@ $(function() {
 				return false;
 			}
 
+			if(isEmailValid($('#email')) !== true) {
+				$('#email').addClass("error").focus();
+				return false;
+			}
+
+			if($('#user_name').val().length === 0) {
+				$('#user_name').addClass('error').focus();
+				return false;
+			}
+
 			var formData = {};
 			formData.manager_name = $('#manager_name').val();
 			formData.pay_deliv_pickup = $('#date_of_prepayment').val() +'/'+ $('#delivery_date').val() +'/'+ $('#shipment_date').val();
 			formData.l_n_p = $('#last_name').val() + ' ' + $('#user_name').val() + ' ' + $('#patronymic').val();
 			formData.phone_number = $('#phone_number').val();
 			formData.email = $('#email').val();
+
 
 			formData.payment_type = $('#payment_type option:selected').text(); //if .not_sel - do not send
 			formData.delivery_type = $('#delivery_type option:selected').text(); //if .not_sel - do not send
@@ -956,8 +1003,9 @@ $(function() {
 
 			formData.table = $table.html();
 
-			$.post('sendemail.php',formData, function (data){
+			$.post('sendemail.php',jQuery.param(formData), function (data){
 				console.log(data);
+				window.location.reload();
 			});
 
 		});
@@ -977,6 +1025,26 @@ $(function() {
 				return false;
 			}
 			$('.close').trigger('click');
+			$('#person_data form').append($('#manager_name').clone().attr('type','hidden')).trigger('submit');
+		});
+
+		$(document).on('click', '#transportation .delete', function(e) {
+			var $table = $(this).parents('table');
+			$(this).parents('tr').remove();
+			calcLostTransportsWeightNeed($table);
+			recalcTransportWithoutUnload();
+		});
+		$(document).on('click', '#transport td.add', addCustomTransport);
+		$(document).on('click', '.edit-transport-custom', function() {
+			var $table = $('#transportation');
+
+			if($(this).hasClass('glyphicon-pencil')) {
+				$(this).removeClass('glyphicon-pencil').addClass('glyphicon-ok');				
+				changeCustomTransportSet($table);
+			} else {
+				$(this).removeClass('glyphicon-ok').addClass('glyphicon-pencil');
+				customTransportToNormal($table);
+			}
 		});
 
 	} else {
@@ -993,7 +1061,7 @@ $(function() {
 
 });
 
-function initMap() {
+function initMap(func) {
 	if(typeof ymaps === 'undefined') return;
 
 	ymaps.ready(function () {
@@ -1003,7 +1071,7 @@ function initMap() {
 	        // type: "yandex#satellite",
 	        controls: []
 	    });
-	    mapObjs['manufacturer'] = new ymaps.Placemark([55.958437,37.870906], {
+	    mapObjs.manufacturer = new ymaps.Placemark([55.958437,37.870906], {
             balloonContent: '<strong>ПроффСтрой</strong>'
         }, {
             preset: 'islands#icon',
@@ -1012,8 +1080,10 @@ function initMap() {
 
 	    if (!isAdmin) {
 	    	myMap.geoObjects
-        	.add(mapObjs['manufacturer']);
+        	.add(mapObjs.manufacturer);
         }
+
+        if(typeof func !== "undefined") func();
 
 		mapAutocomplete();
 	});  
@@ -1048,7 +1118,7 @@ function mapAutocomplete() {
             $('.modal-body .admin-coords').text(coords);
 
             if(isAdmin) {
-    			if(typeof mapObjs['manufacturer'] !== 'undefined') myMap.geoObjects.remove(mapObjs['manufacturer']);
+    			if(typeof mapObjs.manufacturer !== 'undefined') myMap.geoObjects.remove(mapObjs.manufacturer);
 
 
        //      	mapObjs['manufacturer'] = new ymaps.Placemark(coords, {
@@ -1071,9 +1141,9 @@ function mapAutocomplete() {
             }
 
 
-    		if(typeof mapObjs['goal'] !== 'undefined') myMap.geoObjects.remove(mapObjs['goal']);
+    		if(typeof mapObjs.goal !== 'undefined') myMap.geoObjects.remove(mapObjs.goal);
 
-            mapObjs['goal'] = firstGeoObject;
+            mapObjs.goal = firstGeoObject;
 
             if(!isAdmin) {
 	            roadWay();
@@ -1127,7 +1197,7 @@ function mapAutocomplete() {
 
 function newMapPoint(id, address) {
 	
-
+if(typeof myMap === "undefined") initMap();
     // Поиск координат центра Нижнего Новгорода.
     ymaps.geocode(address, {
         /**
@@ -1153,10 +1223,10 @@ function newMapPoint(id, address) {
              if(isAdmin) {
 
 	            
-	    			if(typeof mapObjs['manufacturer'] !== 'undefined') myMap.geoObjects.remove(mapObjs['manufacturer']);
+	    			if(typeof mapObjs.manufacturer !== 'undefined') myMap.geoObjects.remove(mapObjs.manufacturer);
 
 
-	            	mapObjs['manufacturer'] = new ymaps.Placemark(coords, {
+	            	mapObjs.manufacturer = new ymaps.Placemark(coords, {
 			            balloonContent: '<strong>'+$('#manuf_name').val()+'</strong>'
 			        }, {
 			            preset: 'islands#icon',
@@ -1166,7 +1236,7 @@ function newMapPoint(id, address) {
 
 
 			    	myMap.geoObjects
-		        	.add(mapObjs['manufacturer']);
+		        	.add(mapObjs.manufacturer);
 
 	    			myMap.setBounds(bounds,{
 		                checkZoomRange: true // проверяем наличие тайлов на данном масштабе.
@@ -1233,7 +1303,7 @@ function newMapPoint(id, address) {
 function showUnvisible() {
 	// $( document ).tooltip();
 
-	$( "#date_of_prepayment, #delivery_date, #shipment_date" ).datepicker( $.datepicker.regional[ "ru" ] );
+	$( "#date_of_prepayment, #delivery_date, #shipment_date" ).datepicker( $.datepicker.regional.ru );
 
 	$(document).on('click', '.close', function(e) {
 		// var delAfter = false;
@@ -1260,7 +1330,20 @@ function showUnvisible() {
       .button()
       .click(function( event ) {
         event.preventDefault();
-	});	    
+	});
+
+    $('#km2mcad').on('keyup change', function() {
+    	var self = this;
+
+   			(function(self) {
+   				if($(self).attr('oldval') == $(self).val()) {
+	   				return false;
+	   			}
+   				$(self).attr('oldval', $(self).val());
+				startEventAfter(function(){$('#transport').trigger('changesfortransport');}, 'km2mcad', 500);
+   			} (this));
+
+   });
 
 	initMap();
 	onNumberInInpCh();
@@ -1292,23 +1375,23 @@ function materCharactsAvaible(materId, manufctrId) {
 	var len = inputDataItems.blocks.length;
 	var items = inputDataItems.blocks.items[len];
 	var manufctrIsset = !manufctrId;
-	arrRes['size'] = [];
-	arrRes['density'] = [];
+	arrRes.size = [];
+	arrRes.density = [];
 
 
 	for(var i in items) {
 		var el = items[i];
-		if(el['pid'] == materId && (manufctrIsset || el['manuf_id'] == manufctrId)) {
-			arrRes[el['id']] = [];
+		if(el.pid == materId && (manufctrIsset || el.manuf_id == manufctrId)) {
+			arrRes[el.id] = [];
 
-			arrRes[el['id']] = {'size':el['size'],'density':el['density'],'id':el};
-			if (typeof arrRes['size'][el['size']] === 'undefined') arrRes['size'][el['size']] = [];
-			if (typeof arrRes['density'][el['density']] === 'undefined') arrRes['density'][el['density']] = [];
+			arrRes[el.id] = {'size':el.size,'density':el.density,'id':el};
+			if (typeof arrRes.size[el.size] === 'undefined') arrRes.size[el.size] = [];
+			if (typeof arrRes.density[el.density] === 'undefined') arrRes.density[el.density] = [];
 
-			arrRes['size'][el['size']].push(el);
-			arrRes['density'][el['density']].push(el);			
+			arrRes.size[el.size].push(el);
+			arrRes.density[el.density].push(el);			
 		} else {
-			console.log(el['pid'],materId,manufctrIsset ,el['manuf_id']);
+			console.log(el.pid,materId,manufctrIsset ,el.manuf_id);
 		}
 	}
 
@@ -1327,12 +1410,12 @@ function createOption($parent, arr, elName) {
 
 function createTableSize($parent, $arr) {
 	$parent.empty();
-	var localArr = ["number_per_pallet","number_per_cubic_meter"];
-	$parent.append('<tr><td>'+trArr[localArr[0]]+'</td><td>'+trArr[localArr[1]]+'</td></tr>');
+	var localArr = ["number_per_pallet","number_per_cubic_meter", "cubic_per_pallet"];
+	$parent.append('<tr><td>'+trArr[localArr[0]]+'</td><td>'+trArr[localArr[1]]+'</td><td>Кол-во м<sup>3</sup> на 1 поддоне</td></tr>');
 
 	for(var i in $arr) {
 		var $el = $arr[i];
-		$parent.append('<tr><td class="val" name="'+localArr[0]+'">'+$el[localArr[0]]+'</td><td class="val" name="'+localArr[1]+'">'+$el[localArr[1]]+'</td></tr>');
+		$parent.append('<tr><td class="val" name="'+localArr[0]+'">'+$el[localArr[0]]+'</td><td class="val" name="'+localArr[1]+'">'+$el[localArr[1]]+'</td><td class="val" name="'+localArr[2]+'">'+($el.number_per_pallet/$el.number_per_cubic_meter).toFixed(2)+'</td></tr>');
 		break;
 	}
 }
@@ -1367,7 +1450,7 @@ function createTableFull($parent, $arr) {
 	for(var i in trArr) {
 		var el = trArr[i]; // el - name, i - key
 		$parent.append('<tr name="'+i+'"><td>'+el+'</td><td  class="val">'+$arr[i]+'</td><td>'+trArrHelper[i]+'</td></tr>');
-		if(i == 'number_per_cubic_meter') $parent.append('<tr name="cubic_per_pallet"><td>Кол-во м<sup>3</sup> на 1 поддоне</td><td class="val">'+($arr['number_per_pallet']/$arr['number_per_cubic_meter']).toFixed(2)+'</td><td>м<sup>3</sup></td></tr>');
+		if(i == 'number_per_cubic_meter') $parent.append('<tr name="cubic_per_pallet"><td>Кол-во м<sup>3</sup> на 1 поддоне</td><td class="val">'+($arr.number_per_pallet/$arr.number_per_cubic_meter).toFixed(2)+'</td><td>м<sup>3</sup></td></tr>');
 	}
 }
 
@@ -1379,6 +1462,7 @@ function addBlockListeners($block) {
 
 		var $tableBody = $elem.parents('.form_cont').find('.characteristic_block tbody');
 		if(!bothSelected($elem, true, false, $tableBody)) createTableSize($tableBody, $elem.data('el'));
+		correctHTMLBlockHeight(this);
 	}});
 	$block.find('select.density').selectmenu({change: function(e, ui) {
 		var $elem = $(ui.item.element);
@@ -1388,11 +1472,7 @@ function addBlockListeners($block) {
 		var $tableBody = $elem.parents('.form_cont').find('.characteristic_block tbody');
 		if(!bothSelected($elem, false, true, $tableBody)) createTableDensity($tableBody, $elem.data('el'));
 
-		var $parentBlock = $(this).parents('.added_block');
-		var origHeight = $parentBlock.css('height', '').outerHeight();
-
-		var height = $parentBlock.siblings('.characteristic_block').height();
-		if(origHeight < height) $parentBlock.css('height', height+15);
+		correctHTMLBlockHeight(this);
 	}});
 }
 
@@ -1410,6 +1490,7 @@ function bothSelected($el, size, density, $tableBody) {
 
 	if(density === false) {
 		if($parent.find('select.density option:selected').hasClass('not_sel')) {
+			$parent.parent().find('.lastchanged').trigger('change');
 			return false;
 		} 
 	}
@@ -1419,9 +1500,14 @@ function bothSelected($el, size, density, $tableBody) {
 	var data = $el.data('el');
 	for(var i in data) {
 		var item = data[i];
-		if(item['size']==size && item['density']==density) {
+		if(item.size==size && item.density==density) {
 			createTableFull($tableBody, item);
-			$parent.parent().find('.number .n').trigger('change');
+			var $comnPar = $parent.parent();
+			if($comnPar.find('.lastchanged').length === 0) {
+				// $comnPar.find('.number .n').trigger('change');
+			} else {
+				$comnPar.find('.lastchanged').trigger('change');				
+			}
 			return true;
 		}
 	}
@@ -1432,59 +1518,75 @@ function onNumberInInpCh() {
 		var $parent = $(this).parents('.number');
 		var $grandpa = $(this).parents('.form_cont');
 		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td.val').text();
-		perMeter = perMeter == '' ? $grandpa.find('tr td.val[name=number_per_cubic_meter]').text() : perMeter;
+		perMeter = perMeter === '' ? $grandpa.find('tr td.val[name=number_per_cubic_meter]').text() : perMeter;
 
 		var perPallet = $grandpa.find('tr[name=number_per_pallet] td.val').text();
-		perPallet = perPallet == '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
+		perPallet = perPallet === '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
 
-		var myVal = $(this).val();
-	   			
-
-		changeInps($parent,'', perMeter, perPallet, myVal, $grandpa, this);
+		var myVal = $(this).val();	   			
+		var self = this;
+		startEventAfter(function(){
+			changeInps($parent,'', perMeter, perPallet, myVal, $grandpa, self);
+	    }, 'changeInps', 150);
+		
 	});
 	$(document).on('keypress keyup change','.added_block .number .n', function(e) {
 		var $parent = $(this).parents('.number');
 		var $grandpa = $(this).parents('.form_cont');
 		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td.val').text();
-		perMeter = perMeter == '' ? $grandpa.find('tr td.val[name=number_per_cubic_meter]').text() : perMeter;
+		perMeter = perMeter === '' ? $grandpa.find('tr td.val[name=number_per_cubic_meter]').text() : perMeter;
 
 		var perPallet = $grandpa.find('tr[name=number_per_pallet] td.val').text();
-		perPallet = perPallet == '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
+		perPallet = perPallet === '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
 
 		var myVal = $(this).val();
-		changeInps($parent,'number', perMeter, perPallet, myVal, $grandpa, this);
+		var self = this;
+		startEventAfter(function(){
+			changeInps($parent,'number', perMeter, perPallet, myVal, $grandpa, self);
+	    }, 'changeInps', 150);
+		
 	});
 	$(document).on('keypress keyup change','.added_block .number .pallet', function(e) {
 		var $parent = $(this).parents('.number');
 		var $grandpa = $(this).parents('.form_cont');
 		var perMeter = $grandpa.find('tr[name=number_per_cubic_meter] td.val').text();
-		perMeter = perMeter == '' ? $grandpa.find('tr td.val[name=number_per_cubic_meter]').text() : perMeter;
+		perMeter = perMeter === '' ? $grandpa.find('tr td.val[name=number_per_cubic_meter]').text() : perMeter;
 
 		var perPallet = $grandpa.find('tr[name=number_per_pallet] td.val').text();
-		perPallet = perPallet == '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
+		perPallet = perPallet === '' ? $grandpa.find('tr td.val[name=number_per_pallet]').text() : perPallet;
 
 		var myVal = $(this).val();
-		changeInps($parent,'pallet', perMeter, perPallet, myVal, $grandpa, this);
+		var self = this;		
+		startEventAfter(function(){
+			changeInps($parent,'pallet', perMeter, perPallet, myVal, $grandpa, self);
+	    }, 'changeInps', 150);
+		
 	});
 }
 
 function changeInps($parent, iam,perMeter,perPallet, val, $grandpa, self) {
-	if($grandpa.find('select.size option:selected').hasClass('not_sel') ) return false; // || $grandpa.find('select.density option:selected').hasClass('not_sel')
+	$(self).parents('div.number').find('input').removeClass('lastchanged');
+	$(self).addClass('lastchanged');
+	var $sizeSelect = $grandpa.find('select.size option:selected');
 
+	if($sizeSelect.hasClass('not_sel') ) return false; // || $grandpa.find('select.density option:selected').hasClass('not_sel')
+	var oldVal = $sizeSelect.attr('name') + $(self).val();
 	///////////////////
-	if($(self).attr('oldval') == $(self).val()) {
+	if($(self).attr('oldval') == oldVal && $grandpa.find('select option:selected:not(.not_sel)').length == 2 && $parent.parents('.full_opts').length == 0) {
 		return false;
-	} 
+	} else if($grandpa.find('select option:selected:not(.not_sel)').length == 2){
+		$parent.parents('.full_opts').removeClass('full_opts');
+	}
 
-	$(self).attr('oldval', $(self).val());
-	console.log('changed', $(self).attr('oldval'),$(self).val())
+	$(self).attr('oldval', oldVal);
+	console.log('changed', $(self).attr('oldval'),oldVal);
 	//////////////
 
-	if(val == '' && perPallet == '' && perMeter == '') return;
+	if(val === '' && perPallet === '' && perMeter === '') return;
 
-	if(isNaN(val) || val == '') val = 1;
-	if(isNaN(perPallet) || perPallet == '') perPallet = 1;
-	if(isNaN(perMeter) || perMeter == '') perMeter = 1;
+	if(isNaN(val) || val === '') val = 1;
+	if(isNaN(perPallet) || perPallet === '') perPallet = 1;
+	if(isNaN(perMeter) || perMeter === '') perMeter = 1;
 
 	switch(iam) {
 		case 'pallet':
@@ -1513,11 +1615,11 @@ function roadWay() {
     // Точки маршрута можно задавать 3 способами:
     // как строка, как объект или как массив геокоординат.
     ymaps.route([
-        mapObjs['manufacturer'].geometry.getCoordinates().toString(),mapObjs['goal'].geometry.getCoordinates().toString()
+        mapObjs.manufacturer.geometry.getCoordinates().toString(),mapObjs.goal.geometry.getCoordinates().toString()
     ]).then(function (route) {
-    	if(typeof custmRoutersHelper['route'] !== 'undefined') myMap.geoObjects.remove(custmRoutersHelper['route']);
+    	if(typeof custmRoutersHelper.route !== 'undefined') myMap.geoObjects.remove(custmRoutersHelper.route);
 
-    	custmRoutersHelper['route'] = route;
+    	custmRoutersHelper.route = route;
     	var routeLen = route.getLength();
     	$('#route_length').text( (routeLen/1000).toFixed(1) + ' км');
 
@@ -1580,7 +1682,7 @@ function addTransportTable(n, id) {
 	for(var i = 1; i <= n; i++) {
 		var $row = $('<tr>');
 
-		$row.append('<td>'+i+'</td>')
+		$row.append('<td>'+i+'</td>');
 
 		for(var j = 1; j < cols; j++) {
 			var $inp = $('<input type="text" name="'+addTransportCols[j]+'[]" class="edited ">');
@@ -1610,7 +1712,7 @@ function getTableData($table) {
 		}
 	});
 
-	if($table.find('.incorrect').length == 0) {
+	if($table.find('.incorrect').length === 0) {
 		return values;
 	} else {
 		return false;
@@ -1632,7 +1734,7 @@ function getRowData($row) {
 			edited = true;
 		}
 
-		if(edited !== false && val.length == 0) {
+		if(edited !== false && val.length === 0) {
 			$(el).addClass('incorrect');
 			hasEmpty = true;			
 		}
@@ -1691,8 +1793,8 @@ function clearModal($modal) {
 	$modal.find('input[type=text]').val('');
 	$modal.find('.admin-coords').text('');
 
-	if(typeof mapObjs['manufacturer'] !== 'undefined') myMap.geoObjects.remove(mapObjs['manufacturer']);
-	if(typeof mapObjs['goal'] !== 'undefined') myMap.geoObjects.remove(mapObjs['goal']);
+	if(typeof mapObjs.manufacturer !== 'undefined') myMap.geoObjects.remove(mapObjs.manufacturer);
+	if(typeof mapObjs.goal !== 'undefined') myMap.geoObjects.remove(mapObjs.goal);
 }
 
 function changedMixUiSel(e, ui) {
@@ -1713,14 +1815,14 @@ function changedMixUiSel(e, ui) {
 	if(origHeight < height) $parentBlock.css('height', height+15);
 
 	var nVal = $parent.find('form .number .n').val();
-	if(nVal != '' && parseInt(nVal) > 0) $parent.find('form').trigger('mixchanged');
+	if(nVal !== '' && parseInt(nVal) > 0) $parent.find('form').trigger('mixchanged');
 	
 }
 
 function addTableRow($tbody, classname, name, type, after, hoveNoAfter) {
 	var $row = $tbody.find('.'+classname);
 
-	if($row.length == 0) {
+	if($row.length === 0) {
 		$row = $(justTableRow).clone();
 		$row.addClass(classname);
 		$row.find('.service-name').text(name);
@@ -1757,7 +1859,7 @@ function countPallets(self) {
 function getInpNumeric(val, type) {
 	var res = 0;
 
-	if(typeof val !== null && val != '') {
+	if(typeof val !== null && val !== '') {
 		if(type == 'int') {
 			res = Math.ceil(val);
 		} else if(type =='float') {
@@ -1770,34 +1872,35 @@ function getInpNumeric(val, type) {
 
 function addTransportRow(transport) {
 	var $table = $('table#transportation');
+	var $row = '';
 
-	if($table.find('[name=transport' + transport['id'] + ']').length > 0) {
-		var $row = $table.find('[name=transport' + transport['id'] + ']');
+	if($table.find('[name=transport' + transport.id + ']').length > 0) {
+		$row = $table.find('[name=transport' + transport.id + ']');
 	} else {
-		var $row = addCustomRow($table, 6, ['capacity','dimensions','pallets','number','oneprice','comnprice']);
+		$row = addCustomRow($table, 6, ['capacity','dimensions','pallets','number','oneprice','comnprice']);
 		$row.find('td:first').attr('name', 'name');
-		$row.attr('name','transport' + transport['id']);
+		$row.attr('name','transport' + transport.id);
 		$row.find('.edited').removeClass('edited');
 	}
 
-	$row.find('td[name=name]').text(transport['name']);
-	$row.find('td[name=capacity]').text(transport['capacity']);
-	$row.find('td[name=dimensions]').text(transport['dimensions']);
-	$row.find('td[name=pallets]').text(transport['pallets']);
-	$row.find('td[name=number]').text(transport['number']);
-	$row.find('td[name=oneprice]').text(transport['oneprice']);
-	$row.find('td[name=comnprice]').text(transport['comnprice']);
+	$row.find('td[name=name]').text(transport.name);
+	$row.find('td[name=capacity]').text(transport.capacity);
+	$row.find('td[name=dimensions]').text(transport.dimensions);
+	$row.find('td[name=pallets]').text(transport.pallets);
+	$row.find('td[name=number]').text(transport.number);
+	$row.find('td[name=oneprice]').text(transport.oneprice);
+	$row.find('td[name=comnprice]').text(transport.comnprice);
 
 	return $row;
 }
 
-function startEventAfter(funct, eventName, inerv) {
-	if(typeof eventsTimeouts['eventName'] !== 'undefined') clearTimeout(eventsTimeouts['eventName']);
+function startEventAfter(funct, eventName, interv) {
+	if(typeof eventsTimeouts.eventName !== 'undefined') clearTimeout(eventsTimeouts.eventName);
 
-	eventsTimeouts['eventName'] = setTimeout(function(){
+	eventsTimeouts.eventName = setTimeout(function(){
 		funct();
-		delete eventsTimeouts['eventName'];
-	}, inerv);
+		delete eventsTimeouts.eventName;
+	}, interv);
 }
 
 function runTranspRequest(name) {
@@ -1814,4 +1917,142 @@ function recalcTransportWithoutUnload() {
 	$('#transportcomnprice').text(comnprice);
 	$('#order_detail_delivery table tr.delivery .material_comn_price').text(comnprice);
 
+}
+
+function getAllTransport(callback) {
+	$.post('ajax.php?getAllTransport', function(transports) {
+		callback(transports);
+	}, 'json');
+}
+
+function changeCustomTransportSet($table) {
+	$table.find('tbody>tr').append('<td class="delete">x</td>');
+	addCustomTransportForm($table);
+	calcLostTransportsWeightNeed($table);
+}
+
+function addCustomTransportForm($table) {
+	var $row = {};
+
+	if($table.find('[name=custom]').length > 0) {
+		$row = $table.find('[name=custom]');
+	} else {
+		$row = addCustomRow($table, 2, ['number', 'action']);
+		// ['capacity','dimensions','pallets','number','oneprice','comnprice', 'action']
+		$row.attr('name', 'custom');
+		$row.find('>td:first').attr('name', 'name').attr('colspan', 6);
+	}
+
+	$row.find('[name=action]').text('+').addClass('add');
+
+	var transports = '';
+	if(typeof $table.data('transports') !== "undefined") {
+		transports = $table.data('transports');
+		setTransportSelects($row, transports);
+	} else {
+		getAllTransport(function(transports) {
+			if(transports.length === 0) return;
+			$table.data('transports', transports);
+			setTransportSelects($row, transports);
+		});
+	}
+}
+
+function setTransportSelects($row, transports) {
+	var transport = {};
+	var $select = $('<select>');
+	$row.find('td[name=name]').empty().append($select);
+	$row.find('td[name=number]').empty().append($('<input>').attr('type','text').attr('placeholder', 'Количество').val(1));
+	var $option = {};
+
+	for(var i in transports) {
+		transport = transports[i];
+		$option = $('<option>').val(transport.id);
+		$option.data('transport', transport);
+
+		$select.append($option.text(transport.name + ': ' + transport.capacity + 'кг ' + transport.dimensions+ 'м ' + transport.pallets+ 'поддонов ' + transport.rate+ 'р '));
+	}
+}
+
+function addCustomTransport(self) {
+	var transport = $(this).siblings('[name="name"]').find('select option:selected').data('transport');
+	var roadData = Math.ceil( $('#km2mcad').val() );
+	var number = $(this).siblings('[name="number"]').find('input').val();
+	transport.number = parseInt(number);
+	transport.oneprice = parseInt(transport.rate) + Math.ceil(roadData)*parseInt(transport.mcad);
+	transport.comnprice = transport.number * transport.oneprice;
+	var $row = addTransportRow(transport);
+	if( $row.find('td.delete').length === 0 )$row.append('<td class="delete">x</td>');
+	$(this).parents('tr').appendTo($(this).parents('tbody'));
+	calcLostTransportsWeightNeed($row.parents('table'));
+	recalcTransportWithoutUnload();
+}
+
+function customTransportToNormal($table) {
+	$table.find('td.delete, tr[name=custom]').remove();
+	$('#transport .transportCubicMeters,#transport .transportPallets').empty();
+	manualCalcNeededTransport($table);
+	$('#unloading').trigger('with_unload');
+
+}
+
+function transportsAllowWeightAndPallets($table) {
+	var cubicMeters = 0.0;
+	var pallets = 0;
+
+	$table.find('tbody tr[name]').each(function(i, el) {
+		var $el = $(el);
+		if($el.attr("name").indexOf("transport") !== -1) {
+			var weight = getInpNumeric($el.find('td[name="capacity"]').text(), 'int');
+			var number = getInpNumeric($el.find('td[name="number"]').text(), 'int');
+			var rowPallets = getInpNumeric($el.find('td[name="pallets"]').text(), 'int');
+			cubicMeters += weight * number;
+			pallets += rowPallets * number;
+		}
+	});
+
+	return {'cubicMeters' : cubicMeters, 'pallets' : pallets};
+}
+
+function calcLostTransportsWeightNeed($table) {
+	var weightAndPallet = transportsAllowWeightAndPallets($table);
+	$('.transportCubicMeters').text(' ' + (parseInt($table.data('cubicMeters')) - weightAndPallet.cubicMeters) + 'кг');
+	$('.transportPallets').text(' | ' + (parseInt($table.data('pallets')) - weightAndPallet.pallets) + 'шт');	
+}
+
+function isEmailValid(input) {
+	var email = $(input).val();
+	var _err = true;
+
+	if (email.length === 0 || !email.match(/.+@.+\..+/)) {
+		_err = "Некорректный e-mail";
+		$(input).attr('title', _err);
+	}
+
+	return _err;
+}
+
+function manualCalcNeededTransport($table) {
+	var number = 0;
+	var vehPrices = 0;
+
+	$table.find('tr[name]').each(function(i, el) {
+		number += Math.ceil( $(el).find('td[name=number]').text() );
+		vehPrices += Math.ceil( $(el).find('td[name=comnprice]').text() );
+	});
+
+	$('#transportcomnprice').text(vehPrices);
+	$('#order_detail_delivery table tr.delivery .material_comn_price').text(vehPrices);
+	$('#order_detail_delivery table tr.delivery .material_number').text(number);	
+	$('#order_detail_delivery').trigger('tablechanged');
+
+
+}
+
+function correctHTMLBlockHeight(self) {
+	var $parentBlock = $(self).parents('.added_block');
+	var origHeight = $parentBlock.css('height', '').outerHeight();
+
+	var height = $parentBlock.siblings('.characteristic_block').height();
+	if(origHeight < height) $parentBlock.css('height', height+15);
 }
