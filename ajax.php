@@ -133,6 +133,9 @@ if (isset($G['getItems'])) {
 	$db = new DB();
 	$db->query = "UPDATE settings SET `value` = '" .$P['value'] . "' WHERE name='email'";
 	$db->set();
+} elseif (isset($G['getAllTransport'])) {
+	$Transport = new Transport();
+	echo json_encode($Transport->getAll());
 }
 
 exit;

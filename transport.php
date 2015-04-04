@@ -36,10 +36,11 @@ class Transport {
 
 	}
 
-	public function getAll($cols = '*') {
+	public function getAll($cols = '*', $order = '') {
 		$db = $this->db;
 		$db->select($cols);	
 		$db->table('transport');
+		$db->query .= ' ' . $order;
 		return $db->get();
 	}
 

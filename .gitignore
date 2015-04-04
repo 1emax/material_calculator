@@ -10,3 +10,6 @@ js/bootstrap*
 js/npm.js
 calc.sql
 product_features.sql
+11lc_win_transports.php
+calc_smallransports.php
+js/jquery.validate.min.js
