@@ -81,7 +81,7 @@
 			<div id="person_data" class="col-lg-8 col-md-8 col-sm-8">
 			<!-- validation -->
 			<form method="post">
-				<input type="text" tabindex="4" name="last_name" id="last_name" class="col-lg-5 col-md-5 col-sm-5" placeholder="Фамилия"  pattern="[A-Za-z]{3}"  title="Three letter country code" value="<?php if(isset($_POST['last_name'])) { echo $_POST['last_name'];} ?>">
+				<input type="text" tabindex="4" name="last_name" id="last_name" class="col-lg-5 col-md-5 col-sm-5" placeholder="Фамилия"  pattern="[A-Za-zА-Яа-я]+"  title="Three letter country code" value="<?php if(isset($_POST['last_name'])) { echo $_POST['last_name'];} ?>">
 				<input type="text" tabindex="7" name="phone_number" id="phone_number" class="col-lg-5 col-md-5 col-sm-5" placeholder="Телефон"  value="<?php if(isset($_POST['phone_number'])) { echo $_POST['phone_number'];} ?>">
 				<input type="text" tabindex="5" name="user_name" id="user_name" class="col-lg-5 col-md-5 col-sm-5" placeholder="Имя" required value="<?php if(isset($_POST['user_name'])) { echo $_POST['user_name'];} ?>">
 				<input type="email" tabindex="8" name="email" id="email" class="col-lg-5 col-md-5 col-sm-5" placeholder="E-mail" value="<?php if(isset($_POST['email'])) { echo $_POST['email'];} ?>">

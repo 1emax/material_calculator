@@ -123,9 +123,12 @@ input[type=text], input[type=email] {
 	margin-bottom: 15px;
 }
 
-.input-big input {
-	padding-top: 15px;
-	padding-bottom: 15px;
+.input-big input[type="text"], .input-big input[type="email"] {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 30px;
+    vertical-align: middle;
+    border: 1px solid #CCC;
 }
 
 div.unvisible {
